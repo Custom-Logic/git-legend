@@ -29,12 +29,12 @@ interface GitHubCommit {
     avatar_url: string
     id: number
   }
-  stats: {
+  stats?: {
     additions: number
     deletions: number
     total: number
   }
-  files: Array<{
+  files?: Array<{
     filename: string
     additions: number
     deletions: number
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -59,12 +59,17 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get repository from database
+    // Get repository from database - check by user's GitHub ID instead of internal user ID
     const repository = await db.repository.findFirst({
       where: {
         id: repositoryId,
-        userId: session.user.id,
+        user: {
+          email: session.user.email ?? undefined
+        }
       },
+      include: {
+        user: true
+      }
     })
 
     if (!repository) {
@@ -74,10 +79,19 @@ export async function POST(request: Request) {
       )
     }
 
+    // Get access token from session
+    const accessToken = (session as any).accessToken
+    if (!accessToken) {
+      return NextResponse.json(
+        { error: "GitHub access token not found" },
+        { status: 401 }
+      )
+    }
+
     // Create analysis record
     const analysis = await db.analysis.create({
       data: {
-        userId: session.user.id,
+        userId: repository.userId,
         repositoryId: repositoryId,
         status: "PROCESSING",
         progress: 0,
@@ -85,7 +99,10 @@ export async function POST(request: Request) {
     })
 
     // Start analysis in background
-    performAnalysis(repositoryId, analysis.id, repository.fullName, (session as any).accessToken)
+    performAnalysis(repositoryId, analysis.id, repository.fullName, accessToken)
+      .catch(error => {
+        console.error("Background analysis failed:", error)
+      })
 
     return NextResponse.json({ analysisId: analysis.id })
   } catch (error) {
@@ -99,13 +116,11 @@ export async function POST(request: Request) {
 
 async function performAnalysis(repositoryId: string, analysisId: string, fullName: string, accessToken: string) {
   try {
-    // Update analysis progress
     await db.analysis.update({
       where: { id: analysisId },
       data: { progress: 10 },
     })
 
-    // Fetch commits from GitHub API
     const commits = await fetchCommits(fullName, accessToken)
     
     await db.analysis.update({
@@ -113,7 +128,6 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
       data: { progress: 30 },
     })
 
-    // Process commits and calculate significance
     const processedCommits = await processCommits(commits)
     
     await db.analysis.update({
@@ -121,7 +135,6 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
       data: { progress: 60 },
     })
 
-    // Generate AI summaries for significant commits
     const commitsWithSummaries = await generateSummaries(processedCommits)
     
     await db.analysis.update({
@@ -129,13 +142,10 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
       data: { progress: 80 },
     })
 
-    // Extract contributors
     const contributors = extractContributors(processedCommits)
 
-    // Save to database
     await saveAnalysisResults(repositoryId, analysisId, commitsWithSummaries, contributors)
 
-    // Mark analysis as completed
     await db.analysis.update({
       where: { id: analysisId },
       data: { 
@@ -145,7 +155,6 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
       },
     })
 
-    // Update repository last analyzed time
     await db.repository.update({
       where: { id: repositoryId },
       data: { lastAnalyzedAt: new Date() },
@@ -168,30 +177,55 @@ async function fetchCommits(fullName: string, accessToken: string): Promise<GitH
   let page = 1
   const perPage = 100
 
-  while (true) {
+  while (allCommits.length < 500) {
     const response = await fetch(
       `https://api.github.com/repos/${fullName}/commits?per_page=${perPage}&page=${page}`,
       {
         headers: {
           Authorization: `token ${accessToken}`,
           Accept: "application/vnd.github.v3+json",
+          "User-Agent": "GitLegend-App"
         },
       }
     )
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`)
+      if (response.status === 404) {
+        throw new Error("Repository not found or no access")
+      }
+      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`)
     }
 
     const commits = await response.json()
     
-    if (commits.length === 0) break
+    if (!commits || commits.length === 0) break
+    
+    // Fetch detailed commit info for stats
+    for (const commit of commits) {
+      try {
+        const detailResponse = await fetch(
+          `https://api.github.com/repos/${fullName}/commits/${commit.sha}`,
+          {
+            headers: {
+              Authorization: `token ${accessToken}`,
+              Accept: "application/vnd.github.v3+json",
+              "User-Agent": "GitLegend-App"
+            },
+          }
+        )
+        
+        if (detailResponse.ok) {
+          const detailedCommit = await detailResponse.json()
+          commit.stats = detailedCommit.stats
+          commit.files = detailedCommit.files
+        }
+      } catch (error) {
+        console.error(`Error fetching details for commit ${commit.sha}:`, error)
+      }
+    }
     
     allCommits.push(...commits)
     page++
-
-    // Limit to last 500 commits for performance
-    if (allCommits.length >= 500) break
   }
 
   return allCommits
@@ -199,21 +233,17 @@ async function fetchCommits(fullName: string, accessToken: string): Promise<GitH
 
 async function processCommits(commits: GitHubCommit[]) {
   return commits.map((commit) => {
-    // Calculate significance score
     const filesChanged = commit.files?.length || 0
-    const totalChanges = commit.stats?.additions + commit.stats?.deletions || 0
+    const totalChanges = (commit.stats?.additions || 0) + (commit.stats?.deletions || 0)
     const hasMergeKeyword = commit.commit.message.toLowerCase().includes("merge")
-    const hasReleaseKeyword = commit.commit.message.toLowerCase().includes("release") || 
-                              commit.commit.message.toLowerCase().includes("version")
+    const hasReleaseKeyword = /\b(release|version|v\d+\.\d+)\b/i.test(commit.commit.message)
     
-    // Significance algorithm
     let significance = 0
-    significance += Math.log(totalChanges + 1) * 0.4 // Logarithmic scale for changes
-    significance += Math.log(filesChanged + 1) * 0.3 // Files changed
-    significance += hasMergeKeyword ? 0.2 : 0 // Merge commits
-    significance += hasReleaseKeyword ? 0.3 : 0 // Release commits
+    significance += Math.log(totalChanges + 1) * 0.4
+    significance += Math.log(filesChanged + 1) * 0.3
+    significance += hasMergeKeyword ? 0.2 : 0
+    significance += hasReleaseKeyword ? 0.3 : 0
     
-    // Normalize to 0-1 scale
     significance = Math.min(significance, 1)
 
     return {
@@ -229,7 +259,7 @@ async function processCommits(commits: GitHubCommit[]) {
       deletions: commit.stats?.deletions || 0,
       filesChanged,
       significance,
-      isKeyCommit: significance > 0.7, // Top 30% most significant commits
+      isKeyCommit: significance > 0.7,
       authorLogin: commit.author?.login,
       authorAvatar: commit.author?.avatar_url,
       authorGithubId: commit.author?.id?.toString(),
@@ -240,8 +270,6 @@ async function processCommits(commits: GitHubCommit[]) {
 async function generateSummaries(commits: any[]) {
   try {
     const zai = await ZAI.create()
-    
-    // Only generate summaries for key commits to save API calls
     const keyCommits = commits.filter(commit => commit.isKeyCommit)
     
     for (const commit of keyCommits) {
@@ -274,7 +302,7 @@ async function generateSummaries(commits: any[]) {
     return commits
   } catch (error) {
     console.error("Error initializing ZAI for summaries:", error)
-    return commits // Return commits without summaries
+    return commits
   }
 }
 
@@ -305,11 +333,9 @@ function extractContributors(commits: any[]) {
   })
   
   const contributors = Array.from(contributorMap.values())
-  
-  // Sort by commits count and mark top contributors
   contributors.sort((a, b) => b.commitsCount - a.commitsCount)
   
-  const topCount = Math.max(1, Math.floor(contributors.length * 0.2)) // Top 20%
+  const topCount = Math.max(1, Math.floor(contributors.length * 0.2))
   contributors.forEach((contributor, index) => {
     contributor.isTopContributor = index < topCount
     contributor.isFirstContributor = index === 0
@@ -319,7 +345,6 @@ function extractContributors(commits: any[]) {
 }
 
 async function saveAnalysisResults(repositoryId: string, analysisId: string, commits: any[], contributors: any[]) {
-  // Save commits
   for (const commit of commits) {
     await db.commit.create({
       data: {
@@ -343,7 +368,6 @@ async function saveAnalysisResults(repositoryId: string, analysisId: string, com
     })
   }
 
-  // Save contributors
   for (const contributor of contributors) {
     await db.contributor.create({
       data: {

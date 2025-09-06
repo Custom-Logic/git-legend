@@ -17,17 +17,28 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account) {
         token.accessToken = account.access_token;
+      }
+      if (user) {
+        token.userId = user.id;
       }
       return token;
     },
     async session({ session, token, user }) {
-      // Only set accessToken if it exists
+      // Add access token if available
       if (token?.accessToken) {
         session.accessToken = token.accessToken as string;
       }
+      
+      // Add user ID to session
+      if (token?.userId) {
+        session.user.id = token.userId as string;
+      } else if (user?.id) {
+        session.user.id = user.id;
+      }
+      
       return session;
     },
   },
@@ -35,6 +46,6 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   session: {
-    strategy: "jwt", // Force JWT strategy to ensure token callback runs
+    strategy: "jwt",
   },
 };
