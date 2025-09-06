@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the MCP page component.
+ * @exports McpPage
+ */
+
 "use client"
 // src/app/mcp/page.tsx
 import { useState } from "react"
@@ -28,12 +33,20 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+/**
+ * A page component for the MCP server.
+ * @returns {JSX.Element} The McpPage component.
+ */
 export default function McpPage() {
   const [copiedMcpUrl, setCopiedMcpUrl] = useState(false)
 
   const mcpServerUrl = "https://api.gitlegend.com/mcp"
   const mcpApiKey = "gl_your_api_key_here"
 
+  /**
+   * Copies the given text to the clipboard.
+   * @param {string} text - The text to copy.
+   */
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     setCopiedMcpUrl(true)

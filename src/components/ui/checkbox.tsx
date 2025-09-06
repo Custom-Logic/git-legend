@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Checkbox component.
+ * @exports Checkbox
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,6 +11,11 @@ import { CheckIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A checkbox component.
+ * @param {React.ComponentProps<typeof CheckboxPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Checkbox component.
+ */
 function Checkbox({
   className,
   ...props

@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the RepositoryAnalytics component, which displays analytics for a repository.
+ * @exports RepositoryAnalytics
+ */
+
 "use client"
 
 import { useMemo } from "react"
@@ -19,6 +24,10 @@ import {
   Target
 } from "lucide-react"
 
+/**
+ * Represents a commit in the repository.
+ * @interface
+ */
 interface Commit {
   id: string
   authorDate: string
@@ -29,6 +38,10 @@ interface Commit {
   isKeyCommit: boolean
 }
 
+/**
+ * Represents a contributor to the repository.
+ * @interface
+ */
 interface Contributor {
   id: string
   commitsCount: number
@@ -37,12 +50,21 @@ interface Contributor {
   isTopContributor: boolean
 }
 
+/**
+ * Represents the props for the RepositoryAnalytics component.
+ * @interface
+ */
 interface RepositoryAnalyticsProps {
   commits: Commit[]
   contributors: Contributor[]
   healthScore: number
 }
 
+/**
+ * A component that displays analytics for a repository.
+ * @param {RepositoryAnalyticsProps} props - The props for the component.
+ * @returns {JSX.Element} The RepositoryAnalytics component.
+ */
 export default function RepositoryAnalytics({ 
   commits, 
   contributors, 
@@ -81,8 +103,8 @@ export default function RepositoryAnalytics({
     const avgSignificance = commits.reduce((sum, commit) => sum + commit.significance, 0) / commits.length || 0
     
     // Contributor distribution
-    const topContributorsPct = contributors.filter(c => c.isTopContributor).length / contributors.length * 100
-    const avgCommitsPerContributor = commits.length / contributors.length || 0
+    const topContributorsPct = contributors.length > 0 ? contributors.filter(c => c.isTopContributor).length / contributors.length * 100 : 0
+    const avgCommitsPerContributor = contributors.length > 0 ? commits.length / contributors.length : 0
     
     // Risk assessment
     const highRiskCommits = commits.filter(commit => 
@@ -90,7 +112,7 @@ export default function RepositoryAnalytics({
     ).length
     
     const staleDays = commits.length > 0 
-      ? Math.floor((now.getTime() - new Date(commits[0].authorDate).getTime()) / (1000 * 60 * 60 * 24))
+      ? Math.floor((now.getTime() - new Date(commits[commits.length - 1].authorDate).getTime()) / (1000 * 60 * 60 * 24))
       : 0
     
     return {
@@ -129,6 +151,11 @@ export default function RepositoryAnalytics({
     }
   }, [commits, contributors])
 
+  /**
+   * Returns the color for a given risk level.
+   * @param {string} level - The risk level.
+   * @returns {string} The color for the risk level.
+   */
   const getRiskColor = (level: string) => {
     switch (level) {
       case 'high': return 'text-red-600'
@@ -137,12 +164,22 @@ export default function RepositoryAnalytics({
     }
   }
 
+  /**
+   * Returns the color for a given health score.
+   * @param {number} score - The health score.
+   * @returns {string} The color for the health score.
+   */
   const getHealthScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600'
     if (score >= 60) return 'text-yellow-600'
     return 'text-red-600'
   }
 
+  /**
+   * Returns the label for a given health score.
+   * @param {number} score - The health score.
+   * @returns {string} The label for the health score.
+   */
   const getHealthScoreLabel = (score: number) => {
     if (score >= 80) return 'Excellent'
     if (score >= 60) return 'Good'
@@ -389,7 +426,7 @@ export default function RepositoryAnalytics({
               <div className="flex items-center justify-between">
                 <span className="text-sm">High-Risk Commits</span>
                 <span className={`text-sm font-medium ${getRiskColor(analytics.riskAssessment.riskLevel)}`}>
-                  {analytics.riskAssessment.highRiskCommits} ({Math.round(analytics.riskAssessment.highRiskCommits / commits.length * 100)}%)
+                  {analytics.riskAssessment.highRiskCommits} ({commits.length > 0 ? Math.round(analytics.riskAssessment.highRiskCommits / commits.length * 100) : 0}%)
                 </span>
               </div>
               

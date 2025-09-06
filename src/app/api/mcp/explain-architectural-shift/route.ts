@@ -1,8 +1,19 @@
+/**
+ * @file This file contains the API route for explaining the architectural shift of a repository.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { mcpServer } from "@/lib/mcp-server"
 
+/**
+ * Handles GET requests to the /api/mcp/explain-architectural-shift route.
+ *
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions)

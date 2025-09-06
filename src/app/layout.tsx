@@ -1,3 +1,9 @@
+/**
+ * @file This file contains the root layout for the application.
+ * @exports metadata
+ * @exports default
+ */
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -15,6 +21,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/**
+ * The metadata for the application.
+ * @type {Metadata}
+ */
 export const metadata: Metadata = {
   title: "GitLegend - Unfold Your Code's Story",
   description: "Transform your GitHub repository into a compelling visual narrative. Discover the story behind every commit, contributor, and milestone.",
@@ -34,6 +44,12 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * The root layout for the application.
+ * @param {object} props - The props for the component.
+ * @param {React.ReactNode} props.children - The children of the component.
+ * @returns {JSX.Element} The RootLayout component.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

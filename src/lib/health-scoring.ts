@@ -1,5 +1,16 @@
+/**
+ * @file This file contains the HealthScoringService class, which is used to calculate the health score of a repository.
+ * @exports HealthScore
+ * @exports HealthScoringService
+ * @exports healthScoringService
+ */
+
 import { db } from "@/lib/db"
 
+/**
+ * Represents the health score of a repository.
+ * @interface
+ */
 export interface HealthScore {
   overall: number
   breakdown: {
@@ -18,7 +29,15 @@ export interface HealthScore {
   }
 }
 
+/**
+ * A service for calculating the health score of a repository.
+ */
 export class HealthScoringService {
+  /**
+   * Calculates the health score for a given repository.
+   * @param {string} repositoryId - The ID of the repository.
+   * @returns {Promise<HealthScore>} The health score of the repository.
+   */
   async calculateHealthScore(repositoryId: string): Promise<HealthScore> {
     const [commits, contributors] = await Promise.all([
       db.commit.findMany({ where: { repositoryId } }),
@@ -59,6 +78,13 @@ export class HealthScoringService {
     }
   }
 
+  /**
+   * Calculates the health metrics for a repository.
+   * @private
+   * @param {any[]} commits - The commits of the repository.
+   * @param {any[]} contributors - The contributors of the repository.
+   * @returns {object} The health metrics.
+   */
   private calculateMetrics(commits: any[], contributors: any[]) {
     const now = new Date()
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
@@ -98,6 +124,14 @@ export class HealthScoringService {
     }
   }
 
+  /**
+   * Calculates the breakdown of the health score.
+   * @private
+   * @param {any[]} commits - The commits of the repository.
+   * @param {any[]} contributors - The contributors of the repository.
+   * @param {any} metrics - The health metrics.
+   * @returns {object} The breakdown of the health score.
+   */
   private calculateBreakdown(commits: any[], contributors: any[], metrics: any) {
     // Activity Score (0-100)
     let activityScore = 0
@@ -162,6 +196,12 @@ export class HealthScoringService {
     }
   }
 
+  /**
+   * Calculates the overall health score.
+   * @private
+   * @param {any} breakdown - The breakdown of the health score.
+   * @returns {number} The overall health score.
+   */
   private calculateOverallScore(breakdown: any): number {
     const weights = {
       activity: 0.3,
@@ -179,6 +219,13 @@ export class HealthScoringService {
     return Math.round(overall)
   }
 
+  /**
+   * Generates recommendations for improving the health score.
+   * @private
+   * @param {any} breakdown - The breakdown of the health score.
+   * @param {any} metrics - The health metrics.
+   * @returns {string[]} An array of recommendations.
+   */
   private generateRecommendations(breakdown: any, metrics: any): string[] {
     const recommendations: string[] = []
 
@@ -214,6 +261,12 @@ export class HealthScoringService {
     return recommendations
   }
 
+  /**
+   * Calculates the average response time to fix issues.
+   * @private
+   * @param {any[]} fixCommits - The commits that are bug fixes.
+   * @returns {number} The average response time (in days).
+   */
   private calculateAverageResponseTime(fixCommits: any[]): number {
     // Simplified calculation - in reality would analyze issue-to-fix time
     if (fixCommits.length === 0) return 0
@@ -224,4 +277,8 @@ export class HealthScoringService {
   }
 }
 
+/**
+ * An instance of the HealthScoringService.
+ * @type {HealthScoringService}
+ */
 export const healthScoringService = new HealthScoringService()

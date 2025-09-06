@@ -1,3 +1,9 @@
+/**
+ * @file This file contains the ScrollArea component and its subcomponents.
+ * @exports ScrollArea
+ * @exports ScrollBar
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +11,11 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A scrollable area component.
+ * @param {React.ComponentProps<typeof ScrollAreaPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The ScrollArea component.
+ */
 function ScrollArea({
   className,
   children,
@@ -28,6 +39,11 @@ function ScrollArea({
   )
 }
 
+/**
+ * A scrollbar component for a scroll area.
+ * @param {React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>} props - The props for the component.
+ * @returns {JSX.Element} The ScrollBar component.
+ */
 function ScrollBar({
   className,
   orientation = "vertical",

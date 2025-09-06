@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Label component.
+ * @exports Label
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +10,11 @@ import * as LabelPrimitive from "@radix-ui/react-label"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A label component.
+ * @param {React.ComponentProps<typeof LabelPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Label component.
+ */
 function Label({
   className,
   ...props

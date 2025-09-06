@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the API route for analyzing a repository.
+ * @exports POST
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -5,6 +10,10 @@ import { db } from "@/lib/db"
 import { OpenRouterAI } from "@/lib/openrouter"
 import { DEFAULT_MODEL_CONFIG } from "@/lib/ai-models"
 
+/**
+ * Represents a GitHub commit.
+ * @interface
+ */
 interface GitHubCommit {
   sha: string
   commit: {
@@ -18,6 +27,12 @@ interface GitHubCommit {
   files?: Array<{ filename: string; additions: number; deletions: number; changes: number }>
 }
 
+/**
+ * Handles POST requests to the /api/analyze route.
+ *
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
@@ -68,6 +83,11 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * Retrieves the AI model configuration from the database.
+ *
+ * @returns {Promise<object>} The AI model configuration.
+ */
 async function getAIModelConfig() {
   try {
     // Safe access to the model
@@ -86,6 +106,14 @@ async function getAIModelConfig() {
   }
 }
 
+/**
+ * Performs the analysis of a repository.
+ *
+ * @param {string} repositoryId - The ID of the repository to analyze.
+ * @param {string} analysisId - The ID of the analysis.
+ * @param {string} fullName - The full name of the repository.
+ * @param {string} accessToken - The GitHub access token.
+ */
 async function performAnalysis(repositoryId: string, analysisId: string, fullName: string, accessToken: string) {
   try {
     await db.analysis.update({
@@ -143,6 +171,13 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
   }
 }
 
+/**
+ * Fetches the commits for a repository from the GitHub API.
+ *
+ * @param {string} fullName - The full name of the repository.
+ * @param {string} accessToken - The GitHub access token.
+ * @returns {Promise<GitHubCommit[]>} A list of commits.
+ */
 async function fetchCommits(fullName: string, accessToken: string): Promise<GitHubCommit[]> {
   const allCommits: GitHubCommit[] = []
   let page = 1
@@ -200,6 +235,12 @@ async function fetchCommits(fullName: string, accessToken: string): Promise<GitH
   return allCommits
 }
 
+/**
+ * Processes a list of commits, calculating significance and other metrics.
+ *
+ * @param {GitHubCommit[]} commits - The list of commits to process.
+ * @returns {Promise<object[]>} A list of processed commits.
+ */
 async function processCommits(commits: GitHubCommit[]) {
   return commits.map((commit) => {
     const filesChanged = commit.files?.length || 0
@@ -235,6 +276,13 @@ async function processCommits(commits: GitHubCommit[]) {
   })
 }
 
+/**
+ * Generates summaries for a list of commits using an AI model.
+ *
+ * @param {any[]} commits - The list of commits.
+ * @param {string} analysisId - The ID of the analysis.
+ * @returns {Promise<any[]>} A list of commits with summaries.
+ */
 async function generateSummaries(commits: any[], analysisId: string) {
   try {
     const modelConfig = await getAIModelConfig()
@@ -307,6 +355,12 @@ async function generateSummaries(commits: any[], analysisId: string) {
   }
 }
 
+/**
+ * Extracts contributor information from a list of commits.
+ *
+ * @param {any[]} commits - The list of commits.
+ * @returns {any[]} A list of contributors.
+ */
 function extractContributors(commits: any[]) {
   const contributorMap = new Map()
   
@@ -345,6 +399,14 @@ function extractContributors(commits: any[]) {
   return contributors
 }
 
+/**
+ * Saves the analysis results to the database.
+ *
+ * @param {string} repositoryId - The ID of the repository.
+ * @param {string} analysisId - The ID of the analysis.
+ * @param {any[]} commits - The list of commits.
+ * @param {any[]} contributors - The list of contributors.
+ */
 async function saveAnalysisResults(
   repositoryId: string,
   analysisId: string,

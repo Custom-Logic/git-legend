@@ -1,7 +1,23 @@
+/**
+ * @file This file contains the Card component and its subcomponents.
+ * @exports Card
+ * @exports CardHeader
+ * @exports CardFooter
+ * @exports CardTitle
+ * @exports CardAction
+ * @exports CardDescription
+ * @exports CardContent
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A container for showing content in a card.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The Card component.
+ */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -15,6 +31,11 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The header of the card.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CardHeader component.
+ */
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -28,6 +49,11 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The title of the card.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CardTitle component.
+ */
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -38,6 +64,11 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The description of the card.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CardDescription component.
+ */
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -48,6 +79,11 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * An action button or element in the card header.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CardAction component.
+ */
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -61,6 +97,11 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The main content of the card.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CardContent component.
+ */
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -71,6 +112,11 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The footer of the card.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CardFooter component.
+ */
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

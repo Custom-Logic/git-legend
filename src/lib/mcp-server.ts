@@ -1,50 +1,108 @@
+/**
+ * @file This file contains the MCPServer class, which provides methods for analyzing repositories.
+ * @exports MCPContext
+ * @exports BiographyResult
+ * @exports IntelResult
+ * @exports BugOriginResult
+ * @exports ArchitecturalShiftResult
+ * @exports ReviewGuidelinesResult
+ * @exports MCPServer
+ * @exports mcpServer
+ */
+
 import { db } from "@/lib/db"
 import { AnalysisStatus } from "@prisma/client"
 
+/**
+ * Represents the context for an MCP analysis.
+ * @interface
+ */
 export interface MCPContext {
+  /** The ID of the repository. */
   repositoryId: string
+  /** The SHA of the commit to analyze. */
   commitSha?: string
+  /** The ID of the user performing the analysis. */
   userId?: string
 }
 
+/**
+ * Represents the result of a repository biography analysis.
+ * @interface
+ */
 export interface BiographyResult {
+  /** The repository information. */
   repository: {
+    /** The name of the repository. */
     name: string
+    /** The full name of the repository. */
     fullName: string
+    /** The description of the repository. */
     description?: string
+    /** The primary language of the repository. */
     language?: string
+    /** The number of stars. */
     stars: number
+    /** The number of forks. */
     forks: number
+    /** The date the repository was created. */
     createdAt: string
+    /** The date the repository was last analyzed. */
     lastAnalyzedAt?: string
   }
+  /** The total number of commits. */
   totalCommits: number
+  /** The total number of contributors. */
   totalContributors: number
+  /** The time span of the repository's history. */
   timeSpan: {
+    /** The date of the first commit. */
     firstCommit: string
+    /** The date of the last commit. */
     lastCommit: string
   }
+  /** Key metrics for the repository. */
   keyMetrics: {
+    /** The average number of commits per month. */
     avgCommitsPerMonth: number
+    /** The top contributor to the repository. */
     topContributor: string
+    /** The most active month for the repository. */
     mostActiveMonth: string
   }
 }
 
+/**
+ * Represents the result of a commit intelligence analysis.
+ * @interface
+ */
 export interface IntelResult {
+  /** The commit information. */
   commit: {
+    /** The SHA of the commit. */
     sha: string
+    /** The commit message. */
     message: string
+    /** The name of the commit author. */
     authorName: string
+    /** The date of the commit. */
     authorDate: string
+    /** The significance of the commit, from 0 to 1. */
     significance: number
+    /** A summary of the commit. */
     summary?: string
+    /** Whether the commit is a key commit. */
     isKeyCommit: boolean
   }
+  /** The context of the commit. */
   context: {
+    /** The number of files changed in the commit. */
     filesChanged: number
+    /** The number of additions in the commit. */
     additions: number
+    /** The number of deletions in the commit. */
     deletions: number
+    /** An array of related commits. */
     relatedCommits: Array<{
       sha: string
       message: string
@@ -53,53 +111,104 @@ export interface IntelResult {
   }
 }
 
+/**
+ * Represents the result of a bug origin analysis.
+ * @interface
+ */
 export interface BugOriginResult {
+  /** The potential origin of the bug. */
   potentialOrigin: {
+    /** The SHA of the commit. */
     sha: string
+    /** The commit message. */
     message: string
+    /** The date of the commit. */
     authorDate: string
+    /** The name of the commit author. */
     authorName: string
+    /** The confidence in the potential origin, from 0 to 1. */
     confidence: number
+    /** The reasoning for the potential origin. */
     reasoning: string
   } | null
+  /** The analysis of the bug. */
   analysis: {
+    /** A description of the bug. */
     bugDescription: string
+    /** An array of suspicious patterns found in the code. */
     suspiciousPatterns: string[]
+    /** An array of recommended investigation steps. */
     recommendedInvestigation: string[]
   }
 }
 
+/**
+ * Represents the result of an architectural shift analysis.
+ * @interface
+ */
 export interface ArchitecturalShiftResult {
+  /** An array of architectural shifts. */
   shifts: Array<{
+    /** The SHA of the commit. */
     sha: string
+    /** The commit message. */
     message: string
+    /** The date of the commit. */
     authorDate: string
+    /** A description of the shift. */
     description: string
+    /** The impact of the shift. */
     impact: "low" | "medium" | "high"
+    /** An array of files affected by the shift. */
     filesAffected: string[]
   }>
+  /** A summary of the architectural shifts. */
   summary: {
+    /** The number of major shifts. */
     majorShifts: number
+    /** The primary areas of the codebase that have evolved. */
     primaryAreas: string[]
+    /** The evolution pattern of the repository. */
     evolutionPattern: string
   }
 }
 
+/**
+ * Represents the result of a review guidelines analysis.
+ * @interface
+ */
 export interface ReviewGuidelinesResult {
+  /** An array of review guidelines. */
   guidelines: Array<{
+    /** The rule or guideline. */
     rule: string
+    /** A description of the guideline. */
     description: string
+    /** An example commit that illustrates the guideline. */
     exampleCommit?: string
+    /** The severity of the guideline. */
     severity: "low" | "medium" | "high"
   }>
+  /** The context for the review guidelines. */
   context: {
+    /** An array of repository patterns. */
     repositoryPatterns: string[]
+    /** An array of common issues found in the repository. */
     commonIssues: string[]
+    /** An array of team preferences. */
     teamPreferences: string[]
   }
 }
 
+/**
+ * A server class that provides methods for analyzing repositories.
+ */
 class MCPServer {
+  /**
+   * Retrieves the biography of a repository.
+   * @param {string} repositoryId - The ID of the repository.
+   * @returns {Promise<BiographyResult>} A promise that resolves with the biography of the repository.
+   */
   async getBiography(repositoryId: string): Promise<BiographyResult> {
     const repository = await db.repository.findUnique({
       where: { id: repositoryId },
@@ -198,6 +307,12 @@ class MCPServer {
     }
   }
 
+  /**
+   * Retrieves intelligence for a specific commit.
+   * @param {string} commitSha - The SHA of the commit.
+   * @param {string} repositoryId - The ID of the repository.
+   * @returns {Promise<IntelResult>} A promise that resolves with the intelligence for the commit.
+   */
   async getIntel(commitSha: string, repositoryId: string): Promise<IntelResult> {
     const commit = await db.commit.findFirst({
       where: { 
@@ -250,6 +365,13 @@ class MCPServer {
     }
   }
 
+  /**
+   * Diagnoses the origin of a bug.
+   * @param {string} bugDescription - A description of the bug.
+   * @param {string} repositoryId - The ID of the repository.
+   * @param {string} [sinceDate] - The date to start searching for the bug origin.
+   * @returns {Promise<BugOriginResult>} A promise that resolves with the bug origin analysis.
+   */
   async diagnoseBugOrigin(
     bugDescription: string, 
     repositoryId: string,
@@ -318,6 +440,11 @@ class MCPServer {
     }
   }
 
+  /**
+   * Explains the architectural shifts in a repository.
+   * @param {string} repositoryId - The ID of the repository.
+   * @returns {Promise<ArchitecturalShiftResult>} A promise that resolves with the architectural shift analysis.
+   */
   async explainArchitecturalShift(repositoryId: string): Promise<ArchitecturalShiftResult> {
     const commits = await db.commit.findMany({
       where: { repositoryId },
@@ -386,6 +513,11 @@ class MCPServer {
     }
   }
 
+  /**
+   * Retrieves review guidelines for a repository.
+   * @param {string} repositoryId - The ID of the repository.
+   * @returns {Promise<ReviewGuidelinesResult>} A promise that resolves with the review guidelines.
+   */
   async getReviewGuidelines(repositoryId: string): Promise<ReviewGuidelinesResult> {
     const commits = await db.commit.findMany({
       where: { repositoryId },
@@ -447,6 +579,12 @@ class MCPServer {
     }
   }
 
+  /**
+   * Extracts the primary areas of a repository from a list of commits.
+   * @private
+   * @param {any[]} commits - The list of commits.
+   * @returns {string[]} An array of primary areas.
+   */
   private extractPrimaryAreas(commits: any[]): string[] {
     // Simplified - in reality would analyze file paths and commit messages
     const areas = new Set<string>()
@@ -463,6 +601,12 @@ class MCPServer {
     return Array.from(areas)
   }
 
+  /**
+   * Determines the evolution pattern of a repository from a list of shifts.
+   * @private
+   * @param {any[]} shifts - The list of architectural shifts.
+   * @returns {string} The evolution pattern.
+   */
   private determineEvolutionPattern(shifts: any[]): string {
     if (shifts.length === 0) return "Steady incremental development"
     
@@ -473,6 +617,12 @@ class MCPServer {
     return "Stable evolution with minimal architectural disruption"
   }
 
+  /**
+   * Extracts commit patterns from a list of commits.
+   * @private
+   * @param {any[]} commits - The list of commits.
+   * @returns {object} An object containing the commit patterns.
+   */
   private extractCommitPatterns(commits: any[]) {
     const patterns = new Set<string>()
     const issues: string[] = []
@@ -514,4 +664,8 @@ class MCPServer {
   }
 }
 
+/**
+ * An instance of the MCPServer class.
+ * @type {MCPServer}
+ */
 export const mcpServer = new MCPServer()

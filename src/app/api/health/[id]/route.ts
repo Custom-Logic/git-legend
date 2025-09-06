@@ -1,8 +1,20 @@
+/**
+ * @file This file contains the API route for fetching the health score of a repository.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { healthScoringService } from "@/lib/health-scoring"
 
+/**
+ * Handles GET requests to the /api/health/[id] route.
+ *
+ * @param {Request} request - The request object.
+ * @param {{ params: { id: string } }} context - The context object, containing the route parameters.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }

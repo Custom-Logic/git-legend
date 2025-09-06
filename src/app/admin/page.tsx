@@ -1,9 +1,18 @@
+/**
+ * @file This file contains the AI Model Configuration page for the admin panel.
+ * @exports ModelConfig
+ */
+
 "use client"
 
 import React, { useState, useEffect } from 'react'
 import { FREE_AI_MODELS, PREMIUM_AI_MODELS, AIModel, DEFAULT_MODEL_CONFIG } from '@/lib/ai-models'
 import { OpenRouterAI } from '@/lib/openrouter'
 
+/**
+ * Represents the state of the model configuration.
+ * @interface
+ */
 interface ModelConfigState {
   primary: string
   fallback: string
@@ -12,6 +21,10 @@ interface ModelConfigState {
   testResults: Record<string, boolean>
 }
 
+/**
+ * A page component for configuring AI models in the admin panel.
+ * @returns {JSX.Element} The ModelConfig component.
+ */
 export default function ModelConfig() {
   const [config, setConfig] = useState<ModelConfigState>({
     ...DEFAULT_MODEL_CONFIG,
@@ -25,6 +38,9 @@ export default function ModelConfig() {
     loadConfig()
   }, [])
 
+  /**
+   * Loads the current AI model configuration from the server.
+   */
   const loadConfig = async () => {
     try {
       const response = await fetch('/api/admin/ai-models')
@@ -37,6 +53,9 @@ export default function ModelConfig() {
     }
   }
 
+  /**
+   * Saves the current AI model configuration to the server.
+   */
   const saveConfig = async () => {
     setSaving(true)
     setMessage('')
@@ -65,6 +84,9 @@ export default function ModelConfig() {
     }
   }
 
+  /**
+   * Tests the availability of the enabled AI models.
+   */
   const testModels = async () => {
     setConfig(prev => ({ ...prev, testing: true, testResults: {} }))
     
@@ -89,6 +111,10 @@ export default function ModelConfig() {
     }
   }
 
+  /**
+   * Toggles the enabled state of an AI model.
+   * @param {string} modelId - The ID of the model to toggle.
+   */
   const toggleModel = (modelId: string) => {
     setConfig(prev => ({
       ...prev,
@@ -98,6 +124,15 @@ export default function ModelConfig() {
     }))
   }
 
+  /**
+   * A card component for displaying information about an AI model.
+   * @param {object} props - The props for the component.
+   * @param {AIModel} props.model - The AI model to display.
+   * @param {boolean} props.isEnabled - Whether the model is enabled.
+   * @param {boolean} props.isPrimary - Whether the model is the primary model.
+   * @param {boolean} props.isFallback - Whether the model is the fallback model.
+   * @returns {JSX.Element} The ModelCard component.
+   */
   const ModelCard = ({ model, isEnabled, isPrimary, isFallback }: {
     model: AIModel
     isEnabled: boolean

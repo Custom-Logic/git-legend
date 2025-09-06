@@ -1,3 +1,22 @@
+/**
+ * @file This file contains the ContextMenu component and its subcomponents.
+ * @exports ContextMenu
+ * @exports ContextMenuTrigger
+ * @exports ContextMenuContent
+ * @exports ContextMenuItem
+ * @exports ContextMenuCheckboxItem
+ * @exports ContextMenuRadioItem
+ * @exports ContextMenuLabel
+ * @exports ContextMenuSeparator
+ * @exports ContextMenuShortcut
+ * @exports ContextMenuGroup
+ * @exports ContextMenuPortal
+ * @exports ContextMenuSub
+ * @exports ContextMenuSubContent
+ * @exports ContextMenuSubTrigger
+ * @exports ContextMenuRadioGroup
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,12 +25,22 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A context menu component.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenu component.
+ */
 function ContextMenu({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {
   return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />
 }
 
+/**
+ * A trigger that opens the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuTrigger component.
+ */
 function ContextMenuTrigger({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
@@ -20,6 +49,11 @@ function ContextMenuTrigger({
   )
 }
 
+/**
+ * A group of items in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Group>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuGroup component.
+ */
 function ContextMenuGroup({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Group>) {
@@ -28,6 +62,11 @@ function ContextMenuGroup({
   )
 }
 
+/**
+ * A portal that renders the context menu's content in a new DOM node.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Portal>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuPortal component.
+ */
 function ContextMenuPortal({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Portal>) {
@@ -36,12 +75,22 @@ function ContextMenuPortal({
   )
 }
 
+/**
+ * A submenu in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Sub>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuSub component.
+ */
 function ContextMenuSub({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Sub>) {
   return <ContextMenuPrimitive.Sub data-slot="context-menu-sub" {...props} />
 }
 
+/**
+ * A group of radio items in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.RadioGroup>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuRadioGroup component.
+ */
 function ContextMenuRadioGroup({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.RadioGroup>) {
@@ -53,6 +102,11 @@ function ContextMenuRadioGroup({
   )
 }
 
+/**
+ * A trigger that opens a submenu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.SubTrigger> & { inset?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuSubTrigger component.
+ */
 function ContextMenuSubTrigger({
   className,
   inset,
@@ -77,6 +131,11 @@ function ContextMenuSubTrigger({
   )
 }
 
+/**
+ * The content of a submenu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.SubContent>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuSubContent component.
+ */
 function ContextMenuSubContent({
   className,
   ...props
@@ -93,6 +152,11 @@ function ContextMenuSubContent({
   )
 }
 
+/**
+ * The content of a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuContent component.
+ */
 function ContextMenuContent({
   className,
   ...props
@@ -111,6 +175,11 @@ function ContextMenuContent({
   )
 }
 
+/**
+ * An item in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Item> & { inset?: boolean; variant?: "default" | "destructive" }} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuItem component.
+ */
 function ContextMenuItem({
   className,
   inset,
@@ -134,6 +203,11 @@ function ContextMenuItem({
   )
 }
 
+/**
+ * A checkbox item in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.CheckboxItem>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuCheckboxItem component.
+ */
 function ContextMenuCheckboxItem({
   className,
   children,
@@ -160,6 +234,11 @@ function ContextMenuCheckboxItem({
   )
 }
 
+/**
+ * A radio item in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.RadioItem>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuRadioItem component.
+ */
 function ContextMenuRadioItem({
   className,
   children,
@@ -184,6 +263,11 @@ function ContextMenuRadioItem({
   )
 }
 
+/**
+ * A label in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Label> & { inset?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuLabel component.
+ */
 function ContextMenuLabel({
   className,
   inset,
@@ -204,6 +288,11 @@ function ContextMenuLabel({
   )
 }
 
+/**
+ * A separator in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Separator>} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuSeparator component.
+ */
 function ContextMenuSeparator({
   className,
   ...props
@@ -217,6 +306,11 @@ function ContextMenuSeparator({
   )
 }
 
+/**
+ * A shortcut in a context menu item.
+ * @param {React.ComponentProps<"span">} props - The props for the component.
+ * @returns {JSX.Element} The ContextMenuShortcut component.
+ */
 function ContextMenuShortcut({
   className,
   ...props

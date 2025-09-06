@@ -1,12 +1,21 @@
+/**
+ * @file This file contains a custom Prisma adapter for NextAuth.js.
+ * @exports CustomPrismaAdapter
+ */
+
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { Adapter, AdapterUser } from "next-auth/adapters";
 import type { PrismaClient } from "@prisma/client";
 
 /**
- * Custom Prisma Adapter to handle NextAuth.js compatibility with our schema
- * - Maps NextAuth's `image` field to our `avatar` field
- * - Handles `emailVerified` field properly
- * - Synchronous version for older NextAuth.js versions
+ * A custom Prisma adapter for NextAuth.js that handles schema compatibility issues.
+ *
+ * This adapter extends the base Prisma adapter to:
+ * - Map NextAuth's `image` field to the `avatar` field in the User model.
+ * - Ensure the `emailVerified` field is handled correctly.
+ *
+ * @param {PrismaClient} prisma - The Prisma client instance.
+ * @returns {Adapter} A custom NextAuth.js adapter.
  */
 export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
   const baseAdapter = PrismaAdapter(prisma);
@@ -14,6 +23,11 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
   return {
     ...baseAdapter,
 
+    /**
+     * Creates a new user in the database.
+     * @param {Omit<AdapterUser, "id">} userData - The user data.
+     * @returns {Promise<AdapterUser>} The created user.
+     */
     createUser(userData: Omit<AdapterUser, "id">) {
       try {
         const { image, ...rest } = userData;
@@ -31,6 +45,11 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
       }
     },
 
+    /**
+     * Updates an existing user in the database.
+     * @param {Partial<AdapterUser> & Pick<AdapterUser, "id">} userData - The user data to update.
+     * @returns {Promise<AdapterUser>} The updated user.
+     */
     updateUser(userData: Partial<AdapterUser> & Pick<AdapterUser, "id">) {
       try {
         const { image, id, ...rest } = userData;
@@ -48,6 +67,11 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
       }
     },
 
+    /**
+     * Retrieves a user by their ID.
+     * @param {string} id - The user's ID.
+     * @returns {Promise<AdapterUser | null>} The user, or null if not found.
+     */
     getUser(id) {
       try {
         return prisma.user.findUnique({
@@ -67,6 +91,11 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
       }
     },
 
+    /**
+     * Retrieves a user by their email address.
+     * @param {string} email - The user's email address.
+     * @returns {Promise<AdapterUser | null>} The user, or null if not found.
+     */
     getUserByEmail(email) {
       try {
         return prisma.user.findUnique({
@@ -85,6 +114,13 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
       }
     },
 
+    /**
+     * Retrieves a user by their linked account.
+     * @param {object} providerAccountId - The provider and provider account ID.
+     * @param {string} providerAccountId.provider - The provider (e.g., "github").
+     * @param {string} providerAccountId.providerAccountId - The provider account ID.
+     * @returns {Promise<AdapterUser | null>} The user, or null if not found.
+     */
     getUserByAccount(providerAccountId: { provider: string; providerAccountId: string; }) {
       try {
         return prisma.account.findUnique({

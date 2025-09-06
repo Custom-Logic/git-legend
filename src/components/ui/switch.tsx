@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Switch component.
+ * @exports Switch
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +10,11 @@ import * as SwitchPrimitive from "@radix-ui/react-switch"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A switch component.
+ * @param {React.ComponentProps<typeof SwitchPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Switch component.
+ */
 function Switch({
   className,
   ...props

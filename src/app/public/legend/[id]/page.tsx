@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the public legend page component.
+ * @exports default
+ */
+
 import { notFound } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -6,6 +11,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Calendar, Users, GitCommit, Star, GitFork, Share2, Github, ExternalLink } from "lucide-react"
 import Timeline from "@/components/timeline/Timeline"
 
+/**
+ * Represents a repository.
+ * @interface
+ */
 interface Repository {
   id: string
   name: string
@@ -17,6 +26,10 @@ interface Repository {
   lastAnalyzedAt?: string
 }
 
+/**
+ * Represents a commit.
+ * @interface
+ */
 interface Commit {
   id: string
   sha: string
@@ -33,6 +46,10 @@ interface Commit {
   authorAvatar?: string
 }
 
+/**
+ * Represents a contributor.
+ * @interface
+ */
 interface Contributor {
   id: string
   githubId: string
@@ -47,6 +64,11 @@ interface Contributor {
   isTopContributor: boolean
 }
 
+/**
+ * Retrieves a repository by its ID.
+ * @param {string} id - The ID of the repository.
+ * @returns {Promise<Repository | null>} The repository, or null if not found.
+ */
 async function getRepository(id: string): Promise<Repository | null> {
   try {
     const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/repositories/${id}`, {
@@ -66,6 +88,11 @@ async function getRepository(id: string): Promise<Repository | null> {
   }
 }
 
+/**
+ * Retrieves the public commits for a repository.
+ * @param {string} repositoryId - The ID of the repository.
+ * @returns {Promise<Commit[]>} A list of commits.
+ */
 async function getPublicCommits(repositoryId: string): Promise<Commit[]> {
   try {
     const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/commits?repositoryId=${repositoryId}`, {
@@ -85,6 +112,11 @@ async function getPublicCommits(repositoryId: string): Promise<Commit[]> {
   }
 }
 
+/**
+ * Retrieves the public contributors for a repository.
+ * @param {string} repositoryId - The ID of the repository.
+ * @returns {Promise<Contributor[]>} A list of contributors.
+ */
 async function getPublicContributors(repositoryId: string): Promise<Contributor[]> {
   try {
     const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/contributors?repositoryId=${repositoryId}`, {
@@ -104,12 +136,21 @@ async function getPublicContributors(repositoryId: string): Promise<Contributor[
   }
 }
 
+/**
+ * Represents the props for the PublicLegendPage component.
+ * @interface
+ */
 interface PublicLegendPageProps {
   params: {
     id: string
   }
 }
 
+/**
+ * A page component for displaying a public legend for a repository.
+ * @param {PublicLegendPageProps} props - The props for the component.
+ * @returns {Promise<JSX.Element>} The PublicLegendPage component.
+ */
 export default async function PublicLegendPage({ params }: PublicLegendPageProps) {
   const repository = await getRepository(params.id)
   

@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the blog page component.
+ * @exports default
+ */
+
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
@@ -6,6 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // blog route
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
+/**
+ * Retrieves and sorts the blog posts data.
+ * @returns {{id: string, title: string, publishedAt: string, category: string}[]} An array of blog post data.
+ */
 function getSortedPostsData() {
   // Get file names under /posts
   const fileNames = fs.readdirSync(postsDirectory);
@@ -36,6 +45,10 @@ function getSortedPostsData() {
   });
 }
 
+/**
+ * A page component for displaying a list of blog posts.
+ * @returns {JSX.Element} The BlogPage component.
+ */
 export default function BlogPage() {
   const allPostsData = getSortedPostsData();
   return (

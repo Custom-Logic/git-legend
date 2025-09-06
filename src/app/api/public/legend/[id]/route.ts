@@ -1,6 +1,18 @@
+/**
+ * @file This file contains the API route for fetching public legend data for a repository.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 
+/**
+ * Handles GET requests to the /api/public/legend/[id] route.
+ *
+ * @param {Request} request - The request object.
+ * @param {{ params: { id: string } }} context - The context object, containing the route parameters.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }

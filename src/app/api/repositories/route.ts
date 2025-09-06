@@ -1,8 +1,19 @@
+/**
+ * @file This file contains the API route for fetching and creating repositories.
+ * @exports GET
+ * @exports POST
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 
+/**
+ * Handles GET requests to the /api/repositories route.
+ *
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
@@ -30,6 +41,12 @@ export async function GET() {
   }
 }
 
+/**
+ * Handles POST requests to the /api/repositories route.
+ *
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)

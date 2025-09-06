@@ -1,5 +1,15 @@
+/**
+ * @file This file contains the Skeleton component.
+ * @exports Skeleton
+ */
+
 import { cn } from "@/lib/utils"
 
+/**
+ * A skeleton loader component.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The Skeleton component.
+ */
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

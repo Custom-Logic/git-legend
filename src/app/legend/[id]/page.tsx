@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Legend page component, which displays the legend for a repository.
+ * @exports LegendPage
+ */
+
 "use client"
 // displays legend to owner of repo
 // src/app/legend/[id]/page.tsx
@@ -30,6 +35,10 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+/**
+ * Represents a repository.
+ * @interface
+ */
 interface Repository {
   id: string
   name: string
@@ -41,6 +50,10 @@ interface Repository {
   lastAnalyzedAt?: string
 }
 
+/**
+ * Represents a commit.
+ * @interface
+ */
 interface Commit {
   id: string
   sha: string
@@ -57,6 +70,10 @@ interface Commit {
   authorAvatar?: string
 }
 
+/**
+ * Represents a contributor.
+ * @interface
+ */
 interface Contributor {
   id: string
   githubId: string
@@ -71,6 +88,10 @@ interface Contributor {
   isTopContributor: boolean
 }
 
+/**
+ * Represents the health score of a repository.
+ * @interface
+ */
 interface HealthScore {
   overall: number
   breakdown: {
@@ -89,6 +110,10 @@ interface HealthScore {
   }
 }
 
+/**
+ * Represents the biography data for a repository.
+ * @interface
+ */
 interface BiographyData {
   repository: {
     name: string
@@ -113,6 +138,10 @@ interface BiographyData {
   }
 }
 
+/**
+ * A page component for displaying the legend of a repository.
+ * @returns {JSX.Element} The LegendPage component.
+ */
 export default function LegendPage() {
   const params = useParams()
   const router = useRouter()
@@ -138,6 +167,9 @@ export default function LegendPage() {
     }
   }, [repositoryId, session, status])
 
+  /**
+   * Fetches the legend data for the repository.
+   */
   const fetchLegendData = async () => {
     try {
       // Fetch repository data
@@ -182,14 +214,26 @@ export default function LegendPage() {
   }
 
   
+  /**
+   * Generates the share URL for the legend.
+   * @returns {string} The share URL.
+   */
   const generateShareUrl = () => {
     return `${window.location.origin}/legend/${repositoryId}`
   }
 
+  /**
+   * Copies the share URL to the clipboard.
+   */
   const copyShareUrl = () => {
     navigator.clipboard.writeText(generateShareUrl())
   }
 
+  /**
+   * Formats a date string into a more readable format.
+   * @param {string} dateString - The date string to format.
+   * @returns {string} The formatted date string.
+   */
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",

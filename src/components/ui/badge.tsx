@@ -1,9 +1,19 @@
+/**
+ * @file This file contains the Badge component.
+ * @exports Badge
+ * @exports badgeVariants
+ */
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * The variants for the badge component.
+ * @type {cva}
+ */
 const badgeVariants = cva(
   "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
   {
@@ -25,6 +35,11 @@ const badgeVariants = cva(
   }
 )
 
+/**
+ * A component that displays a badge or a tag.
+ * @param {React.ComponentProps<"span"> & VariantProps<typeof badgeVariants> & { asChild?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} The Badge component.
+ */
 function Badge({
   className,
   variant,

@@ -1,3 +1,11 @@
+/**
+ * @file This file contains the Popover component and its subcomponents.
+ * @exports Popover
+ * @exports PopoverTrigger
+ * @exports PopoverContent
+ * @exports PopoverAnchor
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,18 +13,33 @@ import * as PopoverPrimitive from "@radix-ui/react-popover"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A popover component.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Popover component.
+ */
 function Popover({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
+/**
+ * A trigger that opens the popover.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The PopoverTrigger component.
+ */
 function PopoverTrigger({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
+/**
+ * The content of a popover.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The PopoverContent component.
+ */
 function PopoverContent({
   className,
   align = "center",
@@ -39,6 +62,11 @@ function PopoverContent({
   )
 }
 
+/**
+ * An anchor for a popover.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Anchor>} props - The props for the component.
+ * @returns {JSX.Element} The PopoverAnchor component.
+ */
 function PopoverAnchor({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {

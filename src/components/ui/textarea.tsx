@@ -1,7 +1,17 @@
+/**
+ * @file This file contains the Textarea component.
+ * @exports Textarea
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A textarea component.
+ * @param {React.ComponentProps<"textarea">} props - The props for the component.
+ * @returns {JSX.Element} The Textarea component.
+ */
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea

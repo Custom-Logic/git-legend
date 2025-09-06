@@ -1,3 +1,7 @@
+/**
+ * @file This file contains the NavBar component, which is the main navigation bar for the application.
+ * @exports NavBar
+ */
 
 "use client"
 
@@ -20,6 +24,10 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, GitBranch, BrainCircuit } from "lucide-react"
 
+/**
+ * An array of components to be displayed in the navigation menu.
+ * @type {{title: string, href: string, description: string}[]}
+ */
 const components: { title: string; href: string; description: string }[] = [
   {
     title: "GitLegend Developer",
@@ -35,6 +43,10 @@ const components: { title: string; href: string; description: string }[] = [
   },
 ]
 
+/**
+ * The main navigation bar for the application.
+ * @returns {JSX.Element} The NavBar component.
+ */
 export function NavBar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
@@ -146,6 +158,16 @@ export function NavBar() {
   )
 }
 
+/**
+ * A list item component for the navigation menu.
+ * @param {object} props - The props for the component.
+ * @param {string} props.className - The class name for the component.
+ * @param {string} props.title - The title of the list item.
+ * @param {React.ReactNode} props.children - The children of the list item.
+ * @param {React.ReactNode} props.icon - The icon for the list item.
+ * @param {React.Ref<HTMLAnchorElement>} ref - The ref for the component.
+ * @returns {JSX.Element} The ListItem component.
+ */
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a"> & { icon: React.ReactNode }

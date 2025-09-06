@@ -1,3 +1,9 @@
+/**
+ * @file This file contains the RadioGroup component and its subcomponents.
+ * @exports RadioGroup
+ * @exports RadioGroupItem
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,6 +12,11 @@ import { CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A radio group component.
+ * @param {React.ComponentProps<typeof RadioGroupPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The RadioGroup component.
+ */
 function RadioGroup({
   className,
   ...props
@@ -19,6 +30,11 @@ function RadioGroup({
   )
 }
 
+/**
+ * An item in a radio group.
+ * @param {React.ComponentProps<typeof RadioGroupPrimitive.Item>} props - The props for the component.
+ * @returns {JSX.Element} The RadioGroupItem component.
+ */
 function RadioGroupItem({
   className,
   ...props

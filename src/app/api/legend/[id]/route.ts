@@ -1,6 +1,18 @@
+/**
+ * @file This file contains the API route for fetching legend data for a repository.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 
+/**
+ * Handles GET requests to the /api/legend/[id] route.
+ *
+ * @param {Request} request - The request object.
+ * @param {{ params: { id: string } }} context - The context object, containing the route parameters.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -160,7 +172,12 @@ export async function GET(
   }
 }
 
-// Helper function to find the most active month
+/**
+ * Helper function to find the most active month from a list of commits.
+ *
+ * @param {any[]} commits - The list of commits.
+ * @returns {string} The most active month.
+ */
 function getMostActiveMonth(commits: any[]): string {
   const monthCounts: { [key: string]: number } = {}
   

@@ -1,3 +1,11 @@
+/**
+ * @file This file contains the InputOTP component and its subcomponents.
+ * @exports InputOTP
+ * @exports InputOTPGroup
+ * @exports InputOTPSlot
+ * @exports InputOTPSeparator
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,6 +14,11 @@ import { MinusIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * An input component for one-time passwords.
+ * @param {React.ComponentProps<typeof OTPInput> & { containerClassName?: string }} props - The props for the component.
+ * @returns {JSX.Element} The InputOTP component.
+ */
 function InputOTP({
   className,
   containerClassName,
@@ -26,6 +39,11 @@ function InputOTP({
   )
 }
 
+/**
+ * A group of OTP input slots.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The InputOTPGroup component.
+ */
 function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -36,6 +54,11 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * A single slot in an OTP input.
+ * @param {React.ComponentProps<"div"> & { index: number }} props - The props for the component.
+ * @returns {JSX.Element} The InputOTPSlot component.
+ */
 function InputOTPSlot({
   index,
   className,
@@ -66,6 +89,11 @@ function InputOTPSlot({
   )
 }
 
+/**
+ * A separator between OTP input slots.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The InputOTPSeparator component.
+ */
 function InputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
   return (
     <div data-slot="input-otp-separator" role="separator" {...props}>

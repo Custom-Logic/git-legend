@@ -1,3 +1,14 @@
+/**
+ * @file This file contains the chart components.
+ * @exports ChartConfig
+ * @exports ChartContainer
+ * @exports ChartTooltip
+ * @exports ChartTooltipContent
+ * @exports ChartLegend
+ * @exports ChartLegendContent
+ * @exports ChartStyle
+ */
+
 "use client"
 
 import * as React from "react"
@@ -8,6 +19,10 @@ import { cn } from "@/lib/utils"
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
 
+/**
+ * The configuration for a chart.
+ * @type
+ */
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
@@ -24,6 +39,10 @@ type ChartContextProps = {
 
 const ChartContext = React.createContext<ChartContextProps | null>(null)
 
+/**
+ * A custom hook for accessing the chart's context.
+ * @returns {ChartContextProps} The chart's context.
+ */
 function useChart() {
   const context = React.useContext(ChartContext)
 
@@ -34,6 +53,11 @@ function useChart() {
   return context
 }
 
+/**
+ * A container for a chart.
+ * @param {React.ComponentProps<"div"> & { config: ChartConfig; children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>["children"] }} props - The props for the component.
+ * @returns {JSX.Element} The ChartContainer component.
+ */
 function ChartContainer({
   id,
   className,
@@ -69,6 +93,11 @@ function ChartContainer({
   )
 }
 
+/**
+ * A component that applies styles to the chart.
+ * @param {{ id: string; config: ChartConfig }} props - The props for the component.
+ * @returns {JSX.Element | null} The ChartStyle component.
+ */
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color
@@ -104,6 +133,11 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+/**
+ * The content of a chart tooltip.
+ * @param {React.ComponentProps<typeof RechartsPrimitive.Tooltip> & React.ComponentProps<"div"> & { hideLabel?: boolean; hideIndicator?: boolean; indicator?: "line" | "dot" | "dashed"; nameKey?: string; labelKey?: string }} props - The props for the component.
+ * @returns {JSX.Element | null} The ChartTooltipContent component.
+ */
 function ChartTooltipContent({
   active,
   payload,
@@ -250,6 +284,11 @@ function ChartTooltipContent({
 
 const ChartLegend = RechartsPrimitive.Legend
 
+/**
+ * The content of a chart legend.
+ * @param {React.ComponentProps<"div"> & Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & { hideIcon?: boolean; nameKey?: string }} props - The props for the component.
+ * @returns {JSX.Element | null} The ChartLegendContent component.
+ */
 function ChartLegendContent({
   className,
   hideIcon = false,
@@ -304,7 +343,13 @@ function ChartLegendContent({
   )
 }
 
-// Helper to extract item config from a payload.
+/**
+ * A helper function to extract item config from a payload.
+ * @param {ChartConfig} config - The chart configuration.
+ * @param {unknown} payload - The payload from the chart.
+ * @param {string} key - The key to extract from the payload.
+ * @returns {object | undefined} The item configuration.
+ */
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,

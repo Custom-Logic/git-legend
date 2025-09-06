@@ -1,8 +1,18 @@
+/**
+ * @file This file contains the API route for fetching dashboard statistics.
+ * @exports GET
+ */
+
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 
+/**
+ * Handles GET requests to the /api/dashboard/stats route.
+ *
+ * @returns {Promise<NextResponse>} A response object containing dashboard statistics.
+ */
 export async function GET() {
   const session = await getServerSession(authOptions);
 

@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Timeline component, which displays a timeline of commits.
+ * @exports Timeline
+ */
+
 "use client"
 
 import { useState, useEffect, useRef } from "react"
@@ -7,6 +12,10 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Calendar, GitCommit, User, FileText, Copy, ExternalLink } from "lucide-react"
 
+/**
+ * Represents a commit in the repository.
+ * @interface
+ */
 interface Commit {
   id: string
   sha: string
@@ -23,11 +32,20 @@ interface Commit {
   authorAvatar?: string
 }
 
+/**
+ * Represents the props for the Timeline component.
+ * @interface
+ */
 interface TimelineProps {
   commits: Commit[]
   onCommitSelect?: (commit: Commit) => void
 }
 
+/**
+ * A component that displays a timeline of commits.
+ * @param {TimelineProps} props - The props for the component.
+ * @returns {JSX.Element} The Timeline component.
+ */
 export default function Timeline({ commits, onCommitSelect }: TimelineProps) {
   const [selectedCommit, setSelectedCommit] = useState<Commit | null>(null)
   const [visibleCommits, setVisibleCommits] = useState(20)
@@ -37,24 +55,45 @@ export default function Timeline({ commits, onCommitSelect }: TimelineProps) {
     .sort((a, b) => new Date(b.authorDate).getTime() - new Date(a.authorDate).getTime())
     .slice(0, visibleCommits)
 
+  /**
+   * Loads more commits to the timeline.
+   */
   const handleLoadMore = () => {
     setVisibleCommits(prev => prev + 20)
   }
 
+  /**
+   * Handles the click event on a commit.
+   * @param {Commit} commit - The commit that was clicked.
+   */
   const handleCommitClick = (commit: Commit) => {
     setSelectedCommit(commit)
     onCommitSelect?.(commit)
   }
 
+  /**
+   * Generates an MCP URL for a given commit.
+   * @param {Commit} commit - The commit.
+   * @returns {string} The MCP URL for the commit.
+   */
   const generateMCPUrl = (commit: Commit) => {
     return `gitlegend://commit/${commit.sha}`
   }
 
+  /**
+   * Copies the MCP URL for the commit to the clipboard.
+   * @param {Commit} commit - The commit.
+   */
   const copyMCPUrl = (commit: Commit) => {
     const url = generateMCPUrl(commit)
     navigator.clipboard.writeText(url)
   }
 
+  /**
+   * Formats a date string into a more readable format.
+   * @param {string} dateString - The date string to format.
+   * @returns {string} The formatted date string.
+   */
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -63,6 +102,11 @@ export default function Timeline({ commits, onCommitSelect }: TimelineProps) {
     })
   }
 
+  /**
+   * Returns the color for a given significance level.
+   * @param {number} significance - The significance level.
+   * @returns {string} The color for the significance level.
+   */
   const getSignificanceColor = (significance: number) => {
     if (significance >= 0.8) return "bg-red-500"
     if (significance >= 0.6) return "bg-orange-500"
@@ -70,6 +114,11 @@ export default function Timeline({ commits, onCommitSelect }: TimelineProps) {
     return "bg-green-500"
   }
 
+  /**
+   * Returns the label for a given significance level.
+   * @param {number} significance - The significance level.
+   * @returns {string} The label for the significance level.
+   */
   const getSignificanceLabel = (significance: number) => {
     if (significance >= 0.8) return "Critical"
     if (significance >= 0.6) return "Major"

@@ -1,3 +1,9 @@
+/**
+ * @file This file contains the Calendar component and its subcomponents.
+ * @exports Calendar
+ * @exports CalendarDayButton
+ */
+
 "use client"
 
 import * as React from "react"
@@ -11,6 +17,11 @@ import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
+/**
+ * A calendar component that allows users to select a date.
+ * @param {React.ComponentProps<typeof DayPicker> & { buttonVariant?: React.ComponentProps<typeof Button>["variant"] }} props - The props for the component.
+ * @returns {JSX.Element} The Calendar component.
+ */
 function Calendar({
   className,
   classNames,
@@ -172,6 +183,11 @@ function Calendar({
   )
 }
 
+/**
+ * A button that represents a day in the calendar.
+ * @param {React.ComponentProps<typeof DayButton>} props - The props for the component.
+ * @returns {JSX.Element} The CalendarDayButton component.
+ */
 function CalendarDayButton({
   className,
   day,

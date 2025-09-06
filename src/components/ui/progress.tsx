@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Progress component.
+ * @exports Progress
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +10,11 @@ import * as ProgressPrimitive from "@radix-ui/react-progress"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A progress bar component.
+ * @param {React.ComponentProps<typeof ProgressPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Progress component.
+ */
 function Progress({
   className,
   value,

@@ -1,8 +1,20 @@
+/**
+ * @file This file contains the API route for fetching a single repository.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 
+/**
+ * Handles GET requests to the /api/repositories/[id] route.
+ *
+ * @param {Request} request - The request object.
+ * @param {{ params: { id: string } }} context - The context object, containing the route parameters.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }

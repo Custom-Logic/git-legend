@@ -1,3 +1,11 @@
+/**
+ * @file This file contains the Accordion component and its subcomponents.
+ * @exports Accordion
+ * @exports AccordionItem
+ * @exports AccordionTrigger
+ * @exports AccordionContent
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,12 +14,22 @@ import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A vertically stacked set of interactive headings that each reveal a section of content.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Accordion component.
+ */
 function Accordion({
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
   return <AccordionPrimitive.Root data-slot="accordion" {...props} />
 }
 
+/**
+ * An item within an accordion.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Item>} props - The props for the component.
+ * @returns {JSX.Element} The AccordionItem component.
+ */
 function AccordionItem({
   className,
   ...props
@@ -25,6 +43,11 @@ function AccordionItem({
   )
 }
 
+/**
+ * A button that toggles the open state of an accordion item.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The AccordionTrigger component.
+ */
 function AccordionTrigger({
   className,
   children,
@@ -47,6 +70,11 @@ function AccordionTrigger({
   )
 }
 
+/**
+ * The content of an accordion item.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The AccordionContent component.
+ */
 function AccordionContent({
   className,
   children,

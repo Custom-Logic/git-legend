@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Toaster component.
+ * @exports Toaster
+ */
+
 "use client"
 
 import { useToast } from "@/hooks/use-toast"
@@ -10,6 +15,10 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 
+/**
+ * A component that renders toasts.
+ * @returns {JSX.Element} The Toaster component.
+ */
 export function Toaster() {
   const { toasts } = useToast()
 

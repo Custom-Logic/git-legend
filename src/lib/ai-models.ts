@@ -1,17 +1,49 @@
+/**
+ * @file Defines the AI models available in the application and provides functions for accessing them.
+ * @exports AIModel
+ * @exports FREE_AI_MODELS
+ * @exports PREMIUM_AI_MODELS
+ * @exports ALL_MODELS
+ * @exports DEFAULT_MODEL_CONFIG
+ * @exports getModelById
+ * @exports getFreeModels
+ * @exports getRecommendedFreeModels
+ * @exports validateModelConfig
+ */
+
+/**
+ * Represents an AI model with its properties.
+ * @interface
+ */
 export interface AIModel {
+  /** The unique identifier for the model. */
   id: string
+  /** The name of the model. */
   name: string
+  /** The provider of the model. */
   provider: string
+  /** A description of the model. */
   description: string
+  /** The maximum context length for the model. */
   contextLength: number
-  inputPricing: number // per 1M tokens
-  outputPricing: number // per 1M tokens
+  /** The input pricing per 1 million tokens. */
+  inputPricing: number
+  /** The output pricing per 1 million tokens. */
+  outputPricing: number
+  /** A flag indicating if the model is free. */
   isFree: boolean
+  /** A flag indicating if the model is recommended. */
   isRecommended: boolean
+  /** The maximum number of requests per minute. */
   maxRequestsPerMinute?: number
+  /** An array of special features of the model. */
   specialFeatures?: string[]
 }
 
+/**
+ * An array of free AI models.
+ * @type {AIModel[]}
+ */
 export const FREE_AI_MODELS: AIModel[] = [
   {
     id: "deepseek/deepseek-r1:free",
@@ -106,6 +138,10 @@ export const FREE_AI_MODELS: AIModel[] = [
   }
 ]
 
+/**
+ * An array of premium AI models.
+ * @type {AIModel[]}
+ */
 export const PREMIUM_AI_MODELS: AIModel[] = [
   {
     id: "openai/gpt-4o-mini",
@@ -133,26 +169,54 @@ export const PREMIUM_AI_MODELS: AIModel[] = [
   }
 ]
 
+/**
+ * An array of all AI models, both free and premium.
+ * @type {AIModel[]}
+ */
 export const ALL_MODELS = [...FREE_AI_MODELS, ...PREMIUM_AI_MODELS]
 
+/**
+ * The default model configuration.
+ * @property {string} primary - The primary model to use.
+ * @property {string} fallback - The fallback model to use.
+ * @property {string[]} enabled - An array of enabled model IDs.
+ */
 export const DEFAULT_MODEL_CONFIG = {
   primary: "deepseek/deepseek-r1:free",
   fallback: "deepseek/deepseek-chat:free",
   enabled: FREE_AI_MODELS.slice(0, 5).map(m => m.id)
 }
 
+/**
+ * Retrieves an AI model by its ID.
+ * @param {string} modelId - The ID of the model to retrieve.
+ * @returns {AIModel | undefined} The model with the specified ID, or undefined if not found.
+ */
 export function getModelById(modelId: string): AIModel | undefined {
   return ALL_MODELS.find(model => model.id === modelId)
 }
 
+/**
+ * Retrieves all free AI models.
+ * @returns {AIModel[]} An array of free AI models.
+ */
 export function getFreeModels(): AIModel[] {
   return ALL_MODELS.filter(model => model.isFree)
 }
 
+/**
+ * Retrieves all recommended free AI models.
+ * @returns {AIModel[]} An array of recommended free AI models.
+ */
 export function getRecommendedFreeModels(): AIModel[] {
   return ALL_MODELS.filter(model => model.isFree && model.isRecommended)
 }
 
+/**
+ * Validates a list of model IDs.
+ * @param {string[]} modelIds - The list of model IDs to validate.
+ * @returns {{valid: string[], invalid: string[]}} An object containing two arrays: one with valid model IDs and one with invalid model IDs.
+ */
 export function validateModelConfig(modelIds: string[]): { valid: string[], invalid: string[] } {
   const valid = modelIds.filter(id => getModelById(id) !== undefined)
   const invalid = modelIds.filter(id => getModelById(id) === undefined)

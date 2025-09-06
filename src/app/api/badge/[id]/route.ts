@@ -1,6 +1,15 @@
+/**
+ * @file This file contains the API route for generating a repository badge.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 
+/**
+ * Represents the data for a repository badge.
+ * @interface
+ */
 interface BadgeData {
   repository: {
     name: string
@@ -13,6 +22,13 @@ interface BadgeData {
   lastAnalyzedAt?: string
 }
 
+/**
+ * Handles GET requests to the /api/badge/[id] route.
+ *
+ * @param {Request} request - The request object.
+ * @param {{ params: { id: string } }} context - The context object, containing the route parameters.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -67,6 +83,12 @@ export async function GET(
   }
 }
 
+/**
+ * Generates an SVG badge for a repository.
+ *
+ * @param {BadgeData} data - The data for the badge.
+ * @returns {string} The SVG badge.
+ */
 function generateBadgeSVG(data: BadgeData): string {
   const width = 300
   const height = 80

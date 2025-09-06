@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Dashboard page component.
+ * @exports Dashboard
+ */
+
 'use client';
 
 import { useSession } from 'next-auth/react';
@@ -12,6 +17,10 @@ import { Progress } from '@/components/ui/progress';
 import { Github, Plus, Search, Calendar, Users, Code, TrendingUp, Play, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
+/**
+ * Represents a repository.
+ * @interface
+ */
 interface Repository {
   id: string;
   name: string;
@@ -23,6 +32,10 @@ interface Repository {
   lastAnalyzedAt?: string;
 }
 
+/**
+ * Represents the statistics for a repository.
+ * @interface
+ */
 interface RepositoryStats {
   id: string;
   name: string;
@@ -33,6 +46,10 @@ interface RepositoryStats {
   analysisProgress: number | null;
 }
 
+/**
+ * Represents the statistics for the dashboard.
+ * @interface
+ */
 interface DashboardStats {
   totalRepositories: number;
   totalStars: number;
@@ -48,6 +65,10 @@ interface DashboardStats {
   repositoryStats: RepositoryStats[];
 }
 
+/**
+ * A page component for the dashboard.
+ * @returns {JSX.Element | null} The Dashboard component.
+ */
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -80,6 +101,9 @@ export default function Dashboard() {
     }
   }, [isAnalysisInProgress]);
 
+  /**
+   * Fetches the data for the dashboard.
+   */
   const fetchData = async () => {
     try {
       const [reposResponse, statsResponse] = await Promise.all([
@@ -103,6 +127,10 @@ export default function Dashboard() {
     }
   };
 
+  /**
+   * Starts an analysis for a repository.
+   * @param {string} repoId - The ID of the repository to analyze.
+   */
   const analyzeRepository = async (repoId: string) => {
     setAnalyzingRepo(repoId);
     try {

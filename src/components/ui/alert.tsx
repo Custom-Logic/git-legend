@@ -1,3 +1,10 @@
+/**
+ * @file This file contains the Alert component and its subcomponents.
+ * @exports Alert
+ * @exports AlertTitle
+ * @exports AlertDescription
+ */
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -19,6 +26,11 @@ const alertVariants = cva(
   }
 )
 
+/**
+ * A component that displays a short, important message in a way that attracts the user's attention without interrupting their task.
+ * @param {React.ComponentProps<"div"> & VariantProps<typeof alertVariants>} props - The props for the component.
+ * @returns {JSX.Element} The Alert component.
+ */
 function Alert({
   className,
   variant,
@@ -34,6 +46,11 @@ function Alert({
   )
 }
 
+/**
+ * The title of the alert.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The AlertTitle component.
+ */
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -47,6 +64,11 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * The description of the alert.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The AlertDescription component.
+ */
 function AlertDescription({
   className,
   ...props

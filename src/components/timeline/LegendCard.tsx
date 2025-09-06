@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the LegendCard component, which displays information about a commit.
+ * @exports LegendCard
+ */
+
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,6 +11,10 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Calendar, GitCommit, User, FileText, Copy, ExternalLink, Sparkles } from "lucide-react"
 
+/**
+ * Represents a commit in the repository.
+ * @interface
+ */
 interface Commit {
   id: string
   sha: string
@@ -22,12 +31,26 @@ interface Commit {
   authorAvatar?: string
 }
 
+/**
+ * Represents the props for the LegendCard component.
+ * @interface
+ */
 interface LegendCardProps {
   commit: Commit
   className?: string
 }
 
+/**
+ * A component that displays information about a commit.
+ * @param {LegendCardProps} props - The props for the component.
+ * @returns {JSX.Element} The LegendCard component.
+ */
 export default function LegendCard({ commit, className = "" }: LegendCardProps) {
+  /**
+   * Formats a date string into a more readable format.
+   * @param {string} dateString - The date string to format.
+   * @returns {string} The formatted date string.
+   */
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -36,6 +59,11 @@ export default function LegendCard({ commit, className = "" }: LegendCardProps) 
     })
   }
 
+  /**
+   * Returns the color for a given significance level.
+   * @param {number} significance - The significance level.
+   * @returns {string} The color for the significance level.
+   */
   const getSignificanceColor = (significance: number) => {
     if (significance >= 0.8) return "border-red-500 bg-red-50 dark:bg-red-950"
     if (significance >= 0.6) return "border-orange-500 bg-orange-50 dark:bg-orange-950"
@@ -43,6 +71,11 @@ export default function LegendCard({ commit, className = "" }: LegendCardProps) 
     return "border-green-500 bg-green-50 dark:bg-green-950"
   }
 
+  /**
+   * Returns the label for a given significance level.
+   * @param {number} significance - The significance level.
+   * @returns {string} The label for the significance level.
+   */
   const getSignificanceLabel = (significance: number) => {
     if (significance >= 0.8) return "Critical Impact"
     if (significance >= 0.6) return "Major Impact"
@@ -50,10 +83,18 @@ export default function LegendCard({ commit, className = "" }: LegendCardProps) 
     return "Minor Impact"
   }
 
+  /**
+   * Generates an MCP URL for a given commit.
+   * @param {Commit} commit - The commit.
+   * @returns {string} The MCP URL for the commit.
+   */
   const generateMCPUrl = (commit: Commit) => {
     return `gitlegend://commit/${commit.sha}`
   }
 
+  /**
+   * Copies the MCP URL for the commit to the clipboard.
+   */
   const copyMCPUrl = () => {
     const url = generateMCPUrl(commit)
     navigator.clipboard.writeText(url)

@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the SignIn page component.
+ * @exports SignIn
+ */
+
 "use client"
 
 import { signIn, getSession } from "next-auth/react"
@@ -7,11 +12,18 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Github } from "lucide-react"
 
+/**
+ * A page component for signing in.
+ * @returns {JSX.Element} The SignIn component.
+ */
 export default function SignIn() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
+    /**
+     * Checks if the user is already signed in and redirects them to the dashboard if they are.
+     */
     const checkSession = async () => {
       const session = await getSession()
       if (session) {
@@ -21,6 +33,9 @@ export default function SignIn() {
     checkSession()
   }, [router])
 
+  /**
+   * Handles the GitHub sign-in process.
+   */
   const handleGitHubSignIn = async () => {
     setLoading(true)
     try {

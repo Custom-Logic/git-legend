@@ -1,7 +1,17 @@
+/**
+ * @file This file contains the Input component.
+ * @exports Input
+ */
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * An input component.
+ * @param {React.ComponentProps<"input">} props - The props for the component.
+ * @returns {JSX.Element} The Input component.
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input

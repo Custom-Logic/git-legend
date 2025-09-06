@@ -1,6 +1,15 @@
+/**
+ * @file This file contains the pricing page component.
+ * @exports PricingPage
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+/**
+ * A page component for the pricing page.
+ * @returns {JSX.Element} The PricingPage component.
+ */
 export default function PricingPage() {
   return (
     <div className="container mx-auto py-12">

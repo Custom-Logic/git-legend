@@ -1,3 +1,11 @@
+/**
+ * @file This file contains the Tabs component and its subcomponents.
+ * @exports Tabs
+ * @exports TabsList
+ * @exports TabsTrigger
+ * @exports TabsContent
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +13,11 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A tabs component.
+ * @param {React.ComponentProps<typeof TabsPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Tabs component.
+ */
 function Tabs({
   className,
   ...props
@@ -18,6 +31,11 @@ function Tabs({
   )
 }
 
+/**
+ * A list of tabs.
+ * @param {React.ComponentProps<typeof TabsPrimitive.List>} props - The props for the component.
+ * @returns {JSX.Element} The TabsList component.
+ */
 function TabsList({
   className,
   ...props
@@ -34,6 +52,11 @@ function TabsList({
   )
 }
 
+/**
+ * A trigger that activates a tab.
+ * @param {React.ComponentProps<typeof TabsPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The TabsTrigger component.
+ */
 function TabsTrigger({
   className,
   ...props
@@ -50,6 +73,11 @@ function TabsTrigger({
   )
 }
 
+/**
+ * The content of a tab.
+ * @param {React.ComponentProps<typeof TabsPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The TabsContent component.
+ */
 function TabsContent({
   className,
   ...props

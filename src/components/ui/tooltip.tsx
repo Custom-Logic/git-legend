@@ -1,3 +1,11 @@
+/**
+ * @file This file contains the Tooltip component and its subcomponents.
+ * @exports Tooltip
+ * @exports TooltipTrigger
+ * @exports TooltipContent
+ * @exports TooltipProvider
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +13,11 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A provider for the tooltip component.
+ * @param {React.ComponentProps<typeof TooltipPrimitive.Provider>} props - The props for the component.
+ * @returns {JSX.Element} The TooltipProvider component.
+ */
 function TooltipProvider({
   delayDuration = 0,
   ...props
@@ -18,6 +31,11 @@ function TooltipProvider({
   )
 }
 
+/**
+ * A tooltip component.
+ * @param {React.ComponentProps<typeof TooltipPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Tooltip component.
+ */
 function Tooltip({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
@@ -28,12 +46,22 @@ function Tooltip({
   )
 }
 
+/**
+ * A trigger that opens the tooltip.
+ * @param {React.ComponentProps<typeof TooltipPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The TooltipTrigger component.
+ */
 function TooltipTrigger({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
 }
 
+/**
+ * The content of a tooltip.
+ * @param {React.ComponentProps<typeof TooltipPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The TooltipContent component.
+ */
 function TooltipContent({
   className,
   sideOffset = 0,

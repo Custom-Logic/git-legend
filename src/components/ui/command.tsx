@@ -1,3 +1,16 @@
+/**
+ * @file This file contains the Command component and its subcomponents.
+ * @exports Command
+ * @exports CommandDialog
+ * @exports CommandInput
+ * @exports CommandList
+ * @exports CommandEmpty
+ * @exports CommandGroup
+ * @exports CommandItem
+ * @exports CommandShortcut
+ * @exports CommandSeparator
+ */
+
 "use client"
 
 import * as React from "react"
@@ -13,6 +26,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
+/**
+ * A command menu component.
+ * @param {React.ComponentProps<typeof CommandPrimitive>} props - The props for the component.
+ * @returns {JSX.Element} The Command component.
+ */
 function Command({
   className,
   ...props
@@ -29,6 +47,11 @@ function Command({
   )
 }
 
+/**
+ * A command dialog component.
+ * @param {React.ComponentProps<typeof Dialog> & { title?: string; description?: string; className?: string; showCloseButton?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} The CommandDialog component.
+ */
 function CommandDialog({
   title = "Command Palette",
   description = "Search for a command to run...",
@@ -60,6 +83,11 @@ function CommandDialog({
   )
 }
 
+/**
+ * An input for a command menu.
+ * @param {React.ComponentProps<typeof CommandPrimitive.Input>} props - The props for the component.
+ * @returns {JSX.Element} The CommandInput component.
+ */
 function CommandInput({
   className,
   ...props
@@ -82,6 +110,11 @@ function CommandInput({
   )
 }
 
+/**
+ * A list of commands in a command menu.
+ * @param {React.ComponentProps<typeof CommandPrimitive.List>} props - The props for the component.
+ * @returns {JSX.Element} The CommandList component.
+ */
 function CommandList({
   className,
   ...props
@@ -98,6 +131,11 @@ function CommandList({
   )
 }
 
+/**
+ * A component to display when there are no results in a command menu.
+ * @param {React.ComponentProps<typeof CommandPrimitive.Empty>} props - The props for the component.
+ * @returns {JSX.Element} The CommandEmpty component.
+ */
 function CommandEmpty({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
@@ -110,6 +148,11 @@ function CommandEmpty({
   )
 }
 
+/**
+ * A group of commands in a command menu.
+ * @param {React.ComponentProps<typeof CommandPrimitive.Group>} props - The props for the component.
+ * @returns {JSX.Element} The CommandGroup component.
+ */
 function CommandGroup({
   className,
   ...props
@@ -126,6 +169,11 @@ function CommandGroup({
   )
 }
 
+/**
+ * A separator between command groups.
+ * @param {React.ComponentProps<typeof CommandPrimitive.Separator>} props - The props for the component.
+ * @returns {JSX.Element} The CommandSeparator component.
+ */
 function CommandSeparator({
   className,
   ...props
@@ -139,6 +187,11 @@ function CommandSeparator({
   )
 }
 
+/**
+ * An item in a command menu.
+ * @param {React.ComponentProps<typeof CommandPrimitive.Item>} props - The props for the component.
+ * @returns {JSX.Element} The CommandItem component.
+ */
 function CommandItem({
   className,
   ...props
@@ -155,6 +208,11 @@ function CommandItem({
   )
 }
 
+/**
+ * A keyboard shortcut for a command item.
+ * @param {React.ComponentProps<"span">} props - The props for the component.
+ * @returns {JSX.Element} The CommandShortcut component.
+ */
 function CommandShortcut({
   className,
   ...props

@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Add Repository page component.
+ * @exports AddRepository
+ */
+
 "use client"
 // will used by developers to add a repository from their github - allowing the user to update their 
 // access rights to the github repo may proove useful
@@ -14,6 +19,10 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Github, Plus, Search, CheckCircle, AlertCircle } from "lucide-react"
 import Link from "next/link"
 
+/**
+ * Represents a GitHub repository.
+ * @interface
+ */
 interface GitHubRepo {
   id: number
   name: string
@@ -25,6 +34,10 @@ interface GitHubRepo {
   private: boolean
 }
 
+/**
+ * A page component for adding a repository.
+ * @returns {JSX.Element | null} The AddRepository component.
+ */
 export default function AddRepository() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -59,6 +72,9 @@ export default function AddRepository() {
     }
   }, [repositories, searchQuery])
 
+  /**
+   * Fetches the user's repositories from the GitHub API.
+   */
   const fetchUserRepositories = async () => {
     try {
       const response = await fetch("/api/user-repositories")
@@ -74,6 +90,10 @@ export default function AddRepository() {
     }
   }
 
+  /**
+   * Adds a repository to the user's account.
+   * @param {GitHubRepo} repo - The repository to add.
+   */
   const addRepository = async (repo: GitHubRepo) => {
     setAddingRepo(repo.full_name)
     setMessage(null)
@@ -108,6 +128,9 @@ export default function AddRepository() {
     }
   }
 
+  /**
+   * Adds a custom repository to the user's account.
+   */
   const addCustomRepository = async () => {
     if (!customUrl.trim()) return
 

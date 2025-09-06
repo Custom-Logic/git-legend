@@ -1,8 +1,19 @@
+/**
+ * @file This file contains the API route for diagnosing the origin of a bug.
+ * @exports POST
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { mcpServer } from "@/lib/mcp-server"
 
+/**
+ * Handles POST requests to the /api/mcp/diagnose-bug-origin route.
+ *
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)

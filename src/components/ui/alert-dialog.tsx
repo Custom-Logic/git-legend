@@ -1,3 +1,18 @@
+/**
+ * @file This file contains the AlertDialog component and its subcomponents.
+ * @exports AlertDialog
+ * @exports AlertDialogPortal
+ * @exports AlertDialogOverlay
+ * @exports AlertDialogTrigger
+ * @exports AlertDialogContent
+ * @exports AlertDialogHeader
+ * @exports AlertDialogFooter
+ * @exports AlertDialogTitle
+ * @exports AlertDialogDescription
+ * @exports AlertDialogAction
+ * @exports AlertDialogCancel
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,12 +21,22 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
+/**
+ * A modal dialog that interrupts the user with important content and expects a response.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialog component.
+ */
 function AlertDialog({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
 }
 
+/**
+ * A trigger that opens the alert dialog.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogTrigger component.
+ */
 function AlertDialogTrigger({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
@@ -20,6 +45,11 @@ function AlertDialogTrigger({
   )
 }
 
+/**
+ * A portal that renders the alert dialog's content in a new DOM node.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Portal>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogPortal component.
+ */
 function AlertDialogPortal({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {
@@ -28,6 +58,11 @@ function AlertDialogPortal({
   )
 }
 
+/**
+ * A semi-transparent overlay that is rendered behind the alert dialog.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Overlay>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogOverlay component.
+ */
 function AlertDialogOverlay({
   className,
   ...props
@@ -44,6 +79,11 @@ function AlertDialogOverlay({
   )
 }
 
+/**
+ * The content of the alert dialog.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogContent component.
+ */
 function AlertDialogContent({
   className,
   ...props
@@ -63,6 +103,11 @@ function AlertDialogContent({
   )
 }
 
+/**
+ * The header of the alert dialog.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogHeader component.
+ */
 function AlertDialogHeader({
   className,
   ...props
@@ -76,6 +121,11 @@ function AlertDialogHeader({
   )
 }
 
+/**
+ * The footer of the alert dialog.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogFooter component.
+ */
 function AlertDialogFooter({
   className,
   ...props
@@ -92,6 +142,11 @@ function AlertDialogFooter({
   )
 }
 
+/**
+ * The title of the alert dialog.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Title>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogTitle component.
+ */
 function AlertDialogTitle({
   className,
   ...props
@@ -105,6 +160,11 @@ function AlertDialogTitle({
   )
 }
 
+/**
+ * The description of the alert dialog.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Description>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogDescription component.
+ */
 function AlertDialogDescription({
   className,
   ...props
@@ -118,6 +178,11 @@ function AlertDialogDescription({
   )
 }
 
+/**
+ * A button that performs an action in the alert dialog.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Action>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogAction component.
+ */
 function AlertDialogAction({
   className,
   ...props
@@ -130,6 +195,11 @@ function AlertDialogAction({
   )
 }
 
+/**
+ * A button that cancels the action in the alert dialog.
+ * @param {React.ComponentProps<typeof AlertDialogPrimitive.Cancel>} props - The props for the component.
+ * @returns {JSX.Element} The AlertDialogCancel component.
+ */
 function AlertDialogCancel({
   className,
   ...props

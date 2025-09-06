@@ -1,3 +1,14 @@
+/**
+ * @file This file contains the Pagination component and its subcomponents.
+ * @exports Pagination
+ * @exports PaginationContent
+ * @exports PaginationLink
+ * @exports PaginationItem
+ * @exports PaginationPrevious
+ * @exports PaginationNext
+ * @exports PaginationEllipsis
+ */
+
 import * as React from "react"
 import {
   ChevronLeftIcon,
@@ -8,6 +19,11 @@ import {
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
+/**
+ * A pagination component.
+ * @param {React.ComponentProps<"nav">} props - The props for the component.
+ * @returns {JSX.Element} The Pagination component.
+ */
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
@@ -20,6 +36,11 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   )
 }
 
+/**
+ * The content of a pagination component.
+ * @param {React.ComponentProps<"ul">} props - The props for the component.
+ * @returns {JSX.Element} The PaginationContent component.
+ */
 function PaginationContent({
   className,
   ...props
@@ -33,6 +54,11 @@ function PaginationContent({
   )
 }
 
+/**
+ * An item in a pagination component.
+ * @param {React.ComponentProps<"li">} props - The props for the component.
+ * @returns {JSX.Element} The PaginationItem component.
+ */
 function PaginationItem({ ...props }: React.ComponentProps<"li">) {
   return <li data-slot="pagination-item" {...props} />
 }
@@ -42,6 +68,11 @@ type PaginationLinkProps = {
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
   React.ComponentProps<"a">
 
+/**
+ * A link in a pagination component.
+ * @param {PaginationLinkProps} props - The props for the component.
+ * @returns {JSX.Element} The PaginationLink component.
+ */
 function PaginationLink({
   className,
   isActive,
@@ -65,6 +96,11 @@ function PaginationLink({
   )
 }
 
+/**
+ * A link to the previous page in a pagination component.
+ * @param {React.ComponentProps<typeof PaginationLink>} props - The props for the component.
+ * @returns {JSX.Element} The PaginationPrevious component.
+ */
 function PaginationPrevious({
   className,
   ...props
@@ -82,6 +118,11 @@ function PaginationPrevious({
   )
 }
 
+/**
+ * A link to the next page in a pagination component.
+ * @param {React.ComponentProps<typeof PaginationLink>} props - The props for the component.
+ * @returns {JSX.Element} The PaginationNext component.
+ */
 function PaginationNext({
   className,
   ...props
@@ -99,6 +140,11 @@ function PaginationNext({
   )
 }
 
+/**
+ * An ellipsis in a pagination component.
+ * @param {React.ComponentProps<"span">} props - The props for the component.
+ * @returns {JSX.Element} The PaginationEllipsis component.
+ */
 function PaginationEllipsis({
   className,
   ...props

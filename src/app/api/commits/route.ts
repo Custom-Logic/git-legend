@@ -1,8 +1,19 @@
+/**
+ * @file This file contains the API route for fetching commits for a repository.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 
+/**
+ * Handles GET requests to the /api/commits route.
+ *
+ * @param {Request} request - The request object.
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions)

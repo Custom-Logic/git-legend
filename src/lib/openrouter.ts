@@ -1,16 +1,33 @@
+/**
+ * @file This file contains the OpenRouterAI class, which is a client for the OpenRouter AI service.
+ * @exports OpenRouterAI
+ */
+
 import { AIModel, getModelById, DEFAULT_MODEL_CONFIG } from './ai-models'
 
+/**
+ * Represents a message in the OpenRouter API.
+ * @interface
+ */
 interface OpenRouterMessage {
+  /** The role of the message sender. */
   role: 'system' | 'user' | 'assistant'
+  /** The content of the message. */
   content: string
 }
 
+/**
+ * Represents a response from the OpenRouter API.
+ * @interface
+ */
 interface OpenRouterResponse {
+  /** An array of choices. */
   choices: Array<{
     message: {
       content: string
     }
   }>
+  /** An error object, if an error occurred. */
   error?: {
     message: string
     type: string
@@ -18,19 +35,36 @@ interface OpenRouterResponse {
   }
 }
 
+/**
+ * Represents the configuration for the OpenRouterAI client.
+ * @interface
+ */
 interface ModelConfig {
+  /** The primary model to use. */
   primary: string
+  /** The fallback model to use. */
   fallback: string
+  /** An array of enabled models. */
   enabled: string[]
+  /** The maximum number of retries for a request. */
   maxRetries?: number
+  /** The delay between retries, in milliseconds. */
   retryDelay?: number
 }
 
+/**
+ * A client for the OpenRouter AI service.
+ */
 export class OpenRouterAI {
   private apiKey: string
   private baseUrl = 'https://openrouter.ai/api/v1'
   private config: ModelConfig
   
+  /**
+   * Creates a new OpenRouterAI client.
+   * @param {string} [apiKey] - The OpenRouter API key.
+   * @param {Partial<ModelConfig>} [config] - The configuration for the client.
+   */
   constructor(apiKey?: string, config?: Partial<ModelConfig>) {
     this.apiKey = apiKey || process.env.OPENROUTER_API_KEY || "";
     if (!this.apiKey) {
@@ -47,6 +81,15 @@ export class OpenRouterAI {
     };
   }
 
+  /**
+   * Generates a summary for a commit.
+   * @param {string} commitMessage - The commit message.
+   * @param {number} filesChanged - The number of files changed in the commit.
+   * @param {number} additions - The number of additions in the commit.
+   * @param {number} deletions - The number of deletions in the commit.
+   * @param {string} [preferredModel] - The preferred model to use for generating the summary.
+   * @returns {Promise<{ summary: string | null; modelUsed: string | null }>} A promise that resolves with the commit summary and the model used to generate it.
+   */
   async generateCommitSummary(
     commitMessage: string,
     filesChanged: number,
@@ -86,6 +129,13 @@ export class OpenRouterAI {
     return { summary: null, modelUsed: null }
   }
 
+  /**
+   * Tries to generate content with a specific model.
+   * @private
+   * @param {OpenRouterMessage[]} messages - The messages to send to the model.
+   * @param {string} modelId - The ID of the model to use.
+   * @returns {Promise<{ success: boolean; content?: string; error?: string }>} A promise that resolves with the result of the generation attempt.
+   */
   private async tryGenerateWithModel(
     messages: OpenRouterMessage[], 
     modelId: string
@@ -162,6 +212,12 @@ export class OpenRouterAI {
     return { success: false, error: 'Max retries exceeded' }
   }
 
+  /**
+   * Generates summaries for a batch of commits.
+   * @param {Array<{ sha: string; message: string; filesChanged: number; additions: number; deletions: number }>} commits - The commits to summarize.
+   * @param {string} [preferredModel] - The preferred model to use for generating the summaries.
+   * @returns {Promise<Array<{ sha: string; summary: string | null; modelUsed: string | null }>>} A promise that resolves with the commit summaries and the models used to generate them.
+   */
   async batchGenerateSummaries(
     commits: Array<{
       sha: string
@@ -206,6 +262,11 @@ export class OpenRouterAI {
     return results
   }
 
+  /**
+   * Tests the availability of a model.
+   * @param {string} modelId - The ID of the model to test.
+   * @returns {Promise<boolean>} A promise that resolves with a boolean indicating whether the model is available.
+   */
   async testModelAvailability(modelId: string): Promise<boolean> {
     try {
       const result = await this.tryGenerateWithModel(
@@ -218,6 +279,10 @@ export class OpenRouterAI {
     }
   }
 
+  /**
+   * Gets a list of available models.
+   * @returns {Promise<string[]>} A promise that resolves with a list of available model IDs.
+   */
   async getAvailableModels(): Promise<string[]> {
     const available: string[] = []
     
@@ -230,14 +295,28 @@ export class OpenRouterAI {
     return available
   }
 
+  /**
+   * Updates the configuration of the client.
+   * @param {Partial<ModelConfig>} newConfig - The new configuration.
+   */
   updateConfig(newConfig: Partial<ModelConfig>): void {
     this.config = { ...this.config, ...newConfig }
   }
 
+  /**
+   * Gets the current configuration of the client.
+   * @returns {ModelConfig} The current configuration.
+   */
   getConfig(): ModelConfig {
     return { ...this.config }
   }
 
+  /**
+   * Delays the execution for a specified number of milliseconds.
+   * @private
+   * @param {number} ms - The number of milliseconds to delay.
+   * @returns {Promise<void>} A promise that resolves after the specified delay.
+   */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms))
   }

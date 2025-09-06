@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the CommitTimeline component, which displays a timeline of commits for a repository.
+ * @exports CommitTimeline
+ */
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -19,6 +24,10 @@ import {
   Maximize2
 } from "lucide-react"
 
+/**
+ * Represents a commit in the repository.
+ * @interface
+ */
 interface Commit {
   id: string
   sha: string
@@ -36,6 +45,10 @@ interface Commit {
   authorAvatar?: string
 }
 
+/**
+ * Represents a contributor to the repository.
+ * @interface
+ */
 interface Contributor {
   id: string
   login: string
@@ -48,6 +61,10 @@ interface Contributor {
   isFirstContributor: boolean
 }
 
+/**
+ * Represents the props for the CommitTimeline component.
+ * @interface
+ */
 interface CommitTimelineProps {
   commits: Commit[]
   contributors: Contributor[]
@@ -55,6 +72,11 @@ interface CommitTimelineProps {
   selectedCommit?: Commit | null
 }
 
+/**
+ * A component that displays a timeline of commits for a repository.
+ * @param {CommitTimelineProps} props - The props for the component.
+ * @returns {JSX.Element} The CommitTimeline component.
+ */
 export default function CommitTimeline({ 
   commits, 
   contributors, 
@@ -108,6 +130,11 @@ export default function CommitTimeline({
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a))
   }, [filteredCommits, viewMode])
 
+  /**
+   * Returns the icon for a given commit.
+   * @param {Commit} commit - The commit.
+   * @returns {JSX.Element} The icon for the commit.
+   */
   const getCommitIcon = (commit: Commit) => {
     if (commit.message.toLowerCase().includes('merge')) {
       return <GitMerge className="w-4 h-4" />
@@ -118,6 +145,11 @@ export default function CommitTimeline({
     return <GitCommit className="w-4 h-4" />
   }
 
+  /**
+   * Returns the color for a given significance level.
+   * @param {number} significance - The significance level.
+   * @returns {string} The color for the significance level.
+   */
   const getCommitColor = (significance: number) => {
     if (significance > 0.8) return 'bg-red-500'
     if (significance > 0.6) return 'bg-orange-500'
@@ -125,12 +157,22 @@ export default function CommitTimeline({
     return 'bg-green-500'
   }
 
+  /**
+   * Formats a month key into a string.
+   * @param {string} monthKey - The month key (e.g., "2023-01").
+   * @returns {string} The formatted month string (e.g., "January 2023").
+   */
   const formatMonth = (monthKey: string) => {
     const [year, month] = monthKey.split('-')
     const date = new Date(parseInt(year), parseInt(month) - 1)
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
   }
 
+  /**
+   * Formats a day key into a string.
+   * @param {string} dayKey - The day key (e.g., "2023-01-01").
+   * @returns {string} The formatted day string (e.g., "Jan 1, 2023").
+   */
   const formatDay = (dayKey: string) => {
     const [year, month, day] = dayKey.split('-')
     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))

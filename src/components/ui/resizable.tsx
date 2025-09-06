@@ -1,3 +1,10 @@
+/**
+ * @file This file contains the Resizable component and its subcomponents.
+ * @exports ResizablePanelGroup
+ * @exports ResizablePanel
+ * @exports ResizableHandle
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,6 +13,11 @@ import * as ResizablePrimitive from "react-resizable-panels"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A group of resizable panels.
+ * @param {React.ComponentProps<typeof ResizablePrimitive.PanelGroup>} props - The props for the component.
+ * @returns {JSX.Element} The ResizablePanelGroup component.
+ */
 function ResizablePanelGroup({
   className,
   ...props
@@ -22,12 +34,22 @@ function ResizablePanelGroup({
   )
 }
 
+/**
+ * A resizable panel.
+ * @param {React.ComponentProps<typeof ResizablePrimitive.Panel>} props - The props for the component.
+ * @returns {JSX.Element} The ResizablePanel component.
+ */
 function ResizablePanel({
   ...props
 }: React.ComponentProps<typeof ResizablePrimitive.Panel>) {
   return <ResizablePrimitive.Panel data-slot="resizable-panel" {...props} />
 }
 
+/**
+ * A handle for resizing a panel.
+ * @param {React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & { withHandle?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} The ResizableHandle component.
+ */
 function ResizableHandle({
   withHandle,
   className,

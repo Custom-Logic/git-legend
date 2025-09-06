@@ -1,3 +1,7 @@
+/**
+ * @file This file contains the home page component.
+ * @exports Home
+ */
 
 "use client"
 
@@ -6,6 +10,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowRight, GitBranch, BrainCircuit } from "lucide-react"
 import Link from "next/link"
 
+/**
+ * A page component for the home page.
+ * @returns {JSX.Element} The Home component.
+ */
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">

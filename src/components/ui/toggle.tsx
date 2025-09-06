@@ -1,3 +1,9 @@
+/**
+ * @file This file contains the Toggle component.
+ * @exports Toggle
+ * @exports toggleVariants
+ */
+
 "use client"
 
 import * as React from "react"
@@ -6,6 +12,10 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * The variants for the toggle component.
+ * @type {cva}
+ */
 const toggleVariants = cva(
   "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-muted hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap",
   {
@@ -28,6 +38,11 @@ const toggleVariants = cva(
   }
 )
 
+/**
+ * A toggle button component.
+ * @param {React.ComponentProps<typeof TogglePrimitive.Root> & VariantProps<typeof toggleVariants>} props - The props for the component.
+ * @returns {JSX.Element} The Toggle component.
+ */
 function Toggle({
   className,
   variant,

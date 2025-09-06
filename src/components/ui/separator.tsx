@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Separator component.
+ * @exports Separator
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +10,11 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A separator component.
+ * @param {React.ComponentProps<typeof SeparatorPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Separator component.
+ */
 function Separator({
   className,
   orientation = "horizontal",

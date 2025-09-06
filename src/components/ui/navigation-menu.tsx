@@ -1,3 +1,16 @@
+/**
+ * @file This file contains the NavigationMenu component and its subcomponents.
+ * @exports NavigationMenu
+ * @exports NavigationMenuList
+ * @exports NavigationMenuItem
+ * @exports NavigationMenuContent
+ * @exports NavigationMenuTrigger
+ * @exports NavigationMenuLink
+ * @exports NavigationMenuIndicator
+ * @exports NavigationMenuViewport
+ * @exports navigationMenuTriggerStyle
+ */
+
 import * as React from "react"
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
 import { cva } from "class-variance-authority"
@@ -5,6 +18,11 @@ import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A navigation menu component.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.Root> & { viewport?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenu component.
+ */
 function NavigationMenu({
   className,
   children,
@@ -29,6 +47,11 @@ function NavigationMenu({
   )
 }
 
+/**
+ * A list of navigation menu items.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.List>} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenuList component.
+ */
 function NavigationMenuList({
   className,
   ...props
@@ -45,6 +68,11 @@ function NavigationMenuList({
   )
 }
 
+/**
+ * An item in a navigation menu.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.Item>} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenuItem component.
+ */
 function NavigationMenuItem({
   className,
   ...props
@@ -58,10 +86,19 @@ function NavigationMenuItem({
   )
 }
 
+/**
+ * The styles for the navigation menu trigger.
+ * @type {cva}
+ */
 const navigationMenuTriggerStyle = cva(
   "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
 )
 
+/**
+ * A trigger that opens a navigation menu.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenuTrigger component.
+ */
 function NavigationMenuTrigger({
   className,
   children,
@@ -82,6 +119,11 @@ function NavigationMenuTrigger({
   )
 }
 
+/**
+ * The content of a navigation menu.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenuContent component.
+ */
 function NavigationMenuContent({
   className,
   ...props
@@ -99,6 +141,11 @@ function NavigationMenuContent({
   )
 }
 
+/**
+ * The viewport of a navigation menu.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenuViewport component.
+ */
 function NavigationMenuViewport({
   className,
   ...props
@@ -121,6 +168,11 @@ function NavigationMenuViewport({
   )
 }
 
+/**
+ * A link in a navigation menu.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.Link>} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenuLink component.
+ */
 function NavigationMenuLink({
   className,
   ...props
@@ -137,6 +189,11 @@ function NavigationMenuLink({
   )
 }
 
+/**
+ * An indicator for the active navigation menu item.
+ * @param {React.ComponentProps<typeof NavigationMenuPrimitive.Indicator>} props - The props for the component.
+ * @returns {JSX.Element} The NavigationMenuIndicator component.
+ */
 function NavigationMenuIndicator({
   className,
   ...props

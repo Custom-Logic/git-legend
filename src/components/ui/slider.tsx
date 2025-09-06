@@ -1,3 +1,8 @@
+/**
+ * @file This file contains the Slider component.
+ * @exports Slider
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,6 +10,11 @@ import * as SliderPrimitive from "@radix-ui/react-slider"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A slider component.
+ * @param {React.ComponentProps<typeof SliderPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The Slider component.
+ */
 function Slider({
   className,
   defaultValue,

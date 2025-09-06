@@ -1,7 +1,17 @@
+/**
+ * @file This file contains the API route for fetching the user's repositories from GitHub.
+ * @exports GET
+ */
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
+/**
+ * Handles GET requests to the /api/user-repositories route.
+ *
+ * @returns {Promise<NextResponse>} A response object.
+ */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)

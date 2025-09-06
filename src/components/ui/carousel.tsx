@@ -1,3 +1,13 @@
+/**
+ * @file This file contains the Carousel component and its subcomponents.
+ * @exports CarouselApi
+ * @exports Carousel
+ * @exports CarouselContent
+ * @exports CarouselItem
+ * @exports CarouselPrevious
+ * @exports CarouselNext
+ */
+
 "use client"
 
 import * as React from "react"
@@ -9,11 +19,19 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
+/**
+ * The API for the carousel component.
+ * @type {UseEmblaCarouselType[1]}
+ */
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParameters[0]
 type CarouselPlugin = UseCarouselParameters[1]
 
+/**
+ * The props for the Carousel component.
+ * @type
+ */
 type CarouselProps = {
   opts?: CarouselOptions
   plugins?: CarouselPlugin
@@ -32,6 +50,10 @@ type CarouselContextProps = {
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
+/**
+ * A custom hook for accessing the carousel's context.
+ * @returns {CarouselContextProps} The carousel's context.
+ */
 function useCarousel() {
   const context = React.useContext(CarouselContext)
 
@@ -42,6 +64,11 @@ function useCarousel() {
   return context
 }
 
+/**
+ * A carousel component.
+ * @param {React.ComponentProps<"div"> & CarouselProps} props - The props for the component.
+ * @returns {JSX.Element} The Carousel component.
+ */
 function Carousel({
   orientation = "horizontal",
   opts,
@@ -132,6 +159,11 @@ function Carousel({
   )
 }
 
+/**
+ * The content of the carousel.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CarouselContent component.
+ */
 function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
   const { carouselRef, orientation } = useCarousel()
 
@@ -153,6 +185,11 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * An item in the carousel.
+ * @param {React.ComponentProps<"div">} props - The props for the component.
+ * @returns {JSX.Element} The CarouselItem component.
+ */
 function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   const { orientation } = useCarousel()
 
@@ -171,6 +208,11 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * A button that scrolls the carousel to the previous item.
+ * @param {React.ComponentProps<typeof Button>} props - The props for the component.
+ * @returns {JSX.Element} The CarouselPrevious component.
+ */
 function CarouselPrevious({
   className,
   variant = "outline",
@@ -201,6 +243,11 @@ function CarouselPrevious({
   )
 }
 
+/**
+ * A button that scrolls the carousel to the next item.
+ * @param {React.ComponentProps<typeof Button>} props - The props for the component.
+ * @returns {JSX.Element} The CarouselNext component.
+ */
 function CarouselNext({
   className,
   variant = "outline",

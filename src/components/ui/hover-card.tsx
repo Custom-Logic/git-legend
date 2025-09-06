@@ -1,3 +1,10 @@
+/**
+ * @file This file contains the HoverCard component and its subcomponents.
+ * @exports HoverCard
+ * @exports HoverCardTrigger
+ * @exports HoverCardContent
+ */
+
 "use client"
 
 import * as React from "react"
@@ -5,12 +12,22 @@ import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * A hover card component.
+ * @param {React.ComponentProps<typeof HoverCardPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} The HoverCard component.
+ */
 function HoverCard({
   ...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Root>) {
   return <HoverCardPrimitive.Root data-slot="hover-card" {...props} />
 }
 
+/**
+ * A trigger that opens the hover card.
+ * @param {React.ComponentProps<typeof HoverCardPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} The HoverCardTrigger component.
+ */
 function HoverCardTrigger({
   ...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Trigger>) {
@@ -19,6 +36,11 @@ function HoverCardTrigger({
   )
 }
 
+/**
+ * The content of a hover card.
+ * @param {React.ComponentProps<typeof HoverCardPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} The HoverCardContent component.
+ */
 function HoverCardContent({
   className,
   align = "center",

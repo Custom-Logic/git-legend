@@ -1,5 +1,14 @@
+/**
+ * @file This file contains the Developer page component.
+ * @exports DeveloperPage
+ */
 
 import React from 'react';
+
+/**
+ * A page component for the developer section of the application.
+ * @returns {JSX.Element} The DeveloperPage component.
+ */
 // explain how the developer section of this web application works, refer to the docs and pricing page for more information
 export default function DeveloperPage() {
   return (
