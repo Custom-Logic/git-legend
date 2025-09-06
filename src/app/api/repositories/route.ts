@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     // Fetch repository data from GitHub API
     const githubResponse = await fetch(`https://api.github.com/repos/${fullName}`, {
       headers: {
-        Authorization: `token ${process.env.GITHUB_API_TOKEN}`,
+        Authorization: `token ${(session as any).accessToken}`,
         Accept: "application/vnd.github.v3+json",
       },
     })

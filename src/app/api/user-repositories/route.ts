@@ -13,7 +13,7 @@ export async function GET() {
     // Fetch user's repositories from GitHub API
     const response = await fetch("https://api.github.com/user/repos?per_page=100&sort=updated", {
       headers: {
-        Authorization: `token ${process.env.GITHUB_API_TOKEN}`,
+        Authorization: `token ${(session as any).accessToken}`,
         Accept: "application/vnd.github.v3+json",
       },
     })

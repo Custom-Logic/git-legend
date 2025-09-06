@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     })
 
     // Start analysis in background
-    performAnalysis(repositoryId, analysis.id, repository.fullName)
+    performAnalysis(repositoryId, analysis.id, repository.fullName, (session as any).accessToken)
 
     return NextResponse.json({ analysisId: analysis.id })
   } catch (error) {
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
   }
 }
 
-async function performAnalysis(repositoryId: string, analysisId: string, fullName: string) {
+async function performAnalysis(repositoryId: string, analysisId: string, fullName: string, accessToken: string) {
   try {
     // Update analysis progress
     await db.analysis.update({
@@ -106,7 +106,7 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
     })
 
     // Fetch commits from GitHub API
-    const commits = await fetchCommits(fullName)
+    const commits = await fetchCommits(fullName, accessToken)
     
     await db.analysis.update({
       where: { id: analysisId },
@@ -163,7 +163,7 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
   }
 }
 
-async function fetchCommits(fullName: string): Promise<GitHubCommit[]> {
+async function fetchCommits(fullName: string, accessToken: string): Promise<GitHubCommit[]> {
   const allCommits: GitHubCommit[] = []
   let page = 1
   const perPage = 100
@@ -173,7 +173,7 @@ async function fetchCommits(fullName: string): Promise<GitHubCommit[]> {
       `https://api.github.com/repos/${fullName}/commits?per_page=${perPage}&page=${page}`,
       {
         headers: {
-          Authorization: `token ${process.env.GITHUB_API_TOKEN}`,
+          Authorization: `token ${accessToken}`,
           Accept: "application/vnd.github.v3+json",
         },
       }
