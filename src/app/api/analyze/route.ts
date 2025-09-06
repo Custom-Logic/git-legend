@@ -345,10 +345,16 @@ function extractContributors(commits: any[]) {
   return contributors
 }
 
-async function saveAnalysisResults(repositoryId: string, analysisId: string, commits: any[], contributors: any[]) {
-  for (const commit of commits) {
-    await db.commit.create({
-      data: {
+async function saveAnalysisResults(
+  repositoryId: string,
+  analysisId: string,
+  commits: any[],
+  contributors: any[]
+) {
+  // Batch create commits
+  if (commits.length > 0) {
+    await db.commit.createMany({
+      data: commits.map((commit) => ({
         sha: commit.sha,
         message: commit.message,
         authorName: commit.authorName,
@@ -365,26 +371,35 @@ async function saveAnalysisResults(repositoryId: string, analysisId: string, com
         isKeyCommit: commit.isKeyCommit,
         repositoryId,
         analysisId,
-      },
-    })
+      })),
+      skipDuplicates: true, // In case a commit from another analysis is already there
+    });
   }
 
-  for (const contributor of contributors) {
-    await db.contributor.create({
-      data: {
-        githubId: contributor.githubId,
-        login: contributor.login,
-        name: contributor.name,
-        email: contributor.email,
-        avatar: contributor.avatar,
-        commitsCount: contributor.commitsCount,
-        additions: contributor.additions,
-        deletions: contributor.deletions,
-        isFirstContributor: contributor.isFirstContributor,
-        isTopContributor: contributor.isTopContributor,
-        repositoryId,
-        analysisId,
-      },
-    })
+  // Batch create or update contributors
+  if (contributors.length > 0) {
+    for (const contributor of contributors) {
+      await db.contributor.upsert({
+        where: {
+          repositoryId_githubId: {
+            repositoryId,
+            githubId: contributor.githubId,
+          },
+        },
+        update: {
+          commitsCount: { increment: contributor.commitsCount },
+          additions: { increment: contributor.additions },
+          deletions: { increment: contributor.deletions },
+          // Update other fields if necessary
+          name: contributor.name,
+          avatar: contributor.avatar,
+        },
+        create: {
+          ...contributor,
+          repositoryId,
+          analysisId, // Link to the current analysis
+        },
+      });
+    }
   }
 }

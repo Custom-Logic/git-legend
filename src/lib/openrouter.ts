@@ -32,18 +32,19 @@ export class OpenRouterAI {
   private config: ModelConfig
   
   constructor(apiKey?: string, config?: Partial<ModelConfig>) {
-    this.apiKey = apiKey || process.env.OPENROUTER_API_KEY || ''
+    this.apiKey = apiKey || process.env.OPENROUTER_API_KEY || "";
     if (!this.apiKey) {
-      console.log("OpenRouter API key is required")  
-      throw new Error('OpenRouter API key is required')
+      console.error(
+        "OpenRouter API key is not configured. AI features will be disabled."
+      );
     }
-    
+
     this.config = {
       ...DEFAULT_MODEL_CONFIG,
       maxRetries: 3,
       retryDelay: 1000,
-      ...config
-    }
+      ...config,
+    };
   }
 
   async generateCommitSummary(
