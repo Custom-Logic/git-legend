@@ -17,7 +17,7 @@ import {
   Users, 
   GitCommit, 
   Star, 
-  Fork, 
+  GitFork, 
   Share2, 
   Copy,
   ExternalLink,
@@ -291,7 +291,7 @@ export default function LegendPage() {
                   <span>{repository.stars}</span>
                 </div>
                 <div className="flex items-center space-x-1 text-sm text-slate-600">
-                  <Fork className="w-4 h-4" />
+                  <GitFork className="w-4 h-4" />
                   <span>{repository.forks}</span>
                 </div>
               </div>

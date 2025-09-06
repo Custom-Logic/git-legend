@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Calendar, Users, GitCommit, Star, Fork, Share2, Github, ExternalLink } from "lucide-react"
+import { Calendar, Users, GitCommit, Star, GitFork, Share2, Github, ExternalLink } from "lucide-react"
 import Timeline from "@/components/timeline/Timeline"
 
 interface Repository {
@@ -183,7 +183,7 @@ export default async function PublicLegendPage({ params }: PublicLegendPageProps
                   <span>{repository.stars}</span>
                 </div>
                 <div className="flex items-center space-x-1 text-sm text-slate-600">
-                  <Fork className="w-4 h-4" />
+                  <GitFork className="w-4 h-4" />
                   <span>{repository.forks}</span>
                 </div>
               </div>

@@ -1,148 +1,17 @@
-'use client';
+## Restore dashboard functionality
 
-import { useSession } from 'next-auth/react';
-import { useEffect, useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
-import { Github, Plus, Search, Calendar, Users, Code, TrendingUp, Play, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+   we previosly refacted the dashboard page to display the progress bar 
+   in so doing we removed most of the information needed to be displayed in the dashboard can we 
+   restore this information and ensure everything is working properly
 
-interface Repository {
-  id: string;
-  name: string;
-  fullName: string;
-  description?: string;
-  language?: string;
-  stars: number;
-  forks: number;
-  lastAnalyzedAt?: string;
-}
 
-interface RepositoryStats {
-  id: string;
-  name: string;
-  lastAnalyzedAt: string | null;
-  totalAnalyses: number;
-  isAnalyzed: boolean;
-  analysisStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | null;
-  analysisProgress: number | null;
-}
 
-interface DashboardStats {
-  totalRepositories: number;
-  totalStars: number;
-  analyzedThisWeek: number;
-  weeklyChangePercent: number;
-  activeContributors: number;
-  recentAnalyses: Array<{
-    id: string;
-    repositoryName: string;
-    completedAt: string;
-    summariesGenerated: number;
-  }>;
-  repositoryStats: RepositoryStats[];
-}
-
-export default function Dashboard() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [analyzingRepo, setAnalyzingRepo] = useState<string | null>(null);
-
-  const isAnalysisInProgress = useMemo(() => 
-    stats?.repositoryStats.some(r => r.analysisStatus === 'PROCESSING')
-  , [stats]);
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-    }
-  }, [status, router]);
-
-  useEffect(() => {
-    if (session) {
-      fetchData();
-    }
-  }, [session]);
-
-  useEffect(() => {
-    if (isAnalysisInProgress) {
-      const interval = setInterval(fetchData, 5000); // Poll every 5 seconds
-      return () => clearInterval(interval);
-    }
-  }, [isAnalysisInProgress]);
-
-  const fetchData = async () => {
-    try {
-      const [reposResponse, statsResponse] = await Promise.all([
-        fetch('/api/repositories'),
-        fetch('/api/dashboard/stats'),
-      ]);
-
-      if (reposResponse.ok) {
-        const reposData = await reposResponse.json();
-        setRepositories(reposData);
-      }
-
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStats(statsData);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const analyzeRepository = async (repoId: string) => {
-    setAnalyzingRepo(repoId);
-    try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repositoryId: repoId }),
-      });
-
-      if (response.ok) {
-        await fetchData();
-      } else {
-        const error = await response.json();
-        console.error('Analysis failed:', error);
-      }
-    } catch (error) {
-      console.error('Error analyzing repository:', error);
-    } finally {
-      setAnalyzingRepo(null);
-    }
-  };
-
-  const filteredRepositories = repositories.filter(
-    (repo) =>
-      repo.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (status === 'loading' || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!session) return null;
-
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+   ### previous dashboard 
+   -- do not remove the progress bar just merge the old display with the progress bar
+   
+   
+   
+   <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Header */}
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-4 py-4">
@@ -153,10 +22,14 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center space-x-4">
               <Avatar>
-                <AvatarImage src={session.user?.image || ''} />
-                <AvatarFallback>{session.user?.name?.charAt(0) || 'U'}</AvatarFallback>
+                <AvatarImage src={session.user?.image || ""} />
+                <AvatarFallback>
+                  {session.user?.name?.charAt(0) || "U"}
+                </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium">{session.user?.name}</span>
+              <span className="text-sm font-medium">
+                {session.user?.name}
+              </span>
             </div>
           </div>
         </div>
@@ -278,6 +151,7 @@ export default function Dashboard() {
               </Button>
             </Link>
           </div>
+          
           <div className="relative w-full sm:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
             <Input
@@ -292,10 +166,8 @@ export default function Dashboard() {
         {/* Repository Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredRepositories.map((repo) => {
-            const repoStats = stats?.repositoryStats?.find((s) => s.id === repo.id);
-            const isAnalyzed = repoStats?.isAnalyzed || repo.lastAnalyzedAt;
-            const isProcessing = repoStats?.analysisStatus === 'PROCESSING';
-
+              const repoStats = stats?.repositoryStats?.find(s => s.id === repo.id) // A
+            
             return (
               <Card key={repo.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -324,6 +196,7 @@ export default function Dashboard() {
                       {repo.description}
                     </p>
                   )}
+                  
                   <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-1">
@@ -337,24 +210,18 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {isProcessing ? (
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Analyzing...</span>
-                        <span className="text-sm font-bold">{repoStats.analysisProgress || 0}%</span>
-                      </div>
-                      <Progress value={repoStats.analysisProgress || 0} className="w-full" />
-                    </div>
-                  ) : isAnalyzed ? (
+                  {repo.lastAnalyzedAt ? (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2 text-sm text-green-600">
                         <Calendar className="w-4 h-4" />
                         <span>
-                          Analyzed {new Date(repo.lastAnalyzedAt!).toLocaleDateString()}
+                          Analyzed {new Date(repo.lastAnalyzedAt).toLocaleDateString()}
                         </span>
                       </div>
                       <Link href={`/legend/${repo.id}`}>
-                        <Button variant="outline" size="sm">View Legend</Button>
+                        <Button variant="outline" size="sm">
+                          View Legend
+                        </Button>
                       </Link>
                     </div>
                   ) : (
@@ -363,22 +230,25 @@ export default function Dashboard() {
                         <Calendar className="w-4 h-4" />
                         <span>Not analyzed</span>
                       </div>
-                      <Button
-                        size="sm"
+                      <Button 
+                        size="sm" 
                         onClick={() => analyzeRepository(repo.id)}
                         disabled={analyzingRepo === repo.id}
                       >
                         {analyzingRepo === repo.id ? (
-                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing...</>
+                          "Analyzing..."
                         ) : (
-                          <><Play className="w-4 h-4 mr-2" />Analyze Now</>
+                          <>
+                            <Play className="w-4 h-4 mr-2" />
+                            Analyze Now
+                          </>
                         )}
                       </Button>
                     </div>
                   )}
                 </CardContent>
               </Card>
-            );
+            )
           })}
         </div>
 
@@ -401,5 +271,5 @@ export default function Dashboard() {
         )}
       </div>
     </div>
-  );
+  )
 }
