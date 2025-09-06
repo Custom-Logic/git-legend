@@ -18,19 +18,23 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, account }) {
-      // Persist the OAuth access_token to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
       }
       return token;
     },
-    async session({ session, token }) {
-      // Send access token to client
-      session.accessToken = token.accessToken as string;
+    async session({ session, token, user }) {
+      // Only set accessToken if it exists
+      if (token?.accessToken) {
+        session.accessToken = token.accessToken as string;
+      }
       return session;
     },
   },
   pages: {
     signIn: "/auth/signin",
+  },
+  session: {
+    strategy: "jwt", // Force JWT strategy to ensure token callback runs
   },
 };
