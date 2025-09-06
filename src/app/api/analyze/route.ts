@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
-import ZAI from 'z-ai-web-dev-sdk'
+import { OpenRouterAI } from "@/lib/openrouter"
 
 interface GitHubCommit {
   sha: string
@@ -59,7 +59,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get repository from database - check by user's GitHub ID instead of internal user ID
     const repository = await db.repository.findFirst({
       where: {
         id: repositoryId,
@@ -79,7 +78,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get access token from session
     const accessToken = (session as any).accessToken
     if (!accessToken) {
       return NextResponse.json(
@@ -88,7 +86,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create analysis record
     const analysis = await db.analysis.create({
       data: {
         userId: repository.userId,
@@ -98,7 +95,6 @@ export async function POST(request: Request) {
       },
     })
 
-    // Start analysis in background
     performAnalysis(repositoryId, analysis.id, repository.fullName, accessToken)
       .catch(error => {
         console.error("Background analysis failed:", error)
@@ -200,7 +196,6 @@ async function fetchCommits(fullName: string, accessToken: string): Promise<GitH
     
     if (!commits || commits.length === 0) break
     
-    // Fetch detailed commit info for stats
     for (const commit of commits) {
       try {
         const detailResponse = await fetch(
@@ -269,39 +264,33 @@ async function processCommits(commits: GitHubCommit[]) {
 
 async function generateSummaries(commits: any[]) {
   try {
-    const zai = await ZAI.create()
+    const openRouter = new OpenRouterAI()
     const keyCommits = commits.filter(commit => commit.isKeyCommit)
     
-    for (const commit of keyCommits) {
-      try {
-        const completion = await zai.chat.completions.create({
-          messages: [
-            {
-              role: "system",
-              content: "You are an expert software engineer who analyzes git commits and provides clear, concise summaries. Focus on the 'why' behind the change, not just the 'what'. Keep summaries to 1-2 sentences maximum."
-            },
-            {
-              role: "user",
-              content: `Summarize this git commit for a technical audience:\n\nCommit Message: ${commit.message}\n\nFiles Changed: ${commit.filesChanged}\nAdditions: ${commit.additions}\nDeletions: ${commit.deletions}`
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 150,
-        })
-
-        const summary = completion.choices[0]?.message?.content
-        if (summary) {
-          commit.summary = summary.trim()
-        }
-      } catch (error) {
-        console.error("Error generating summary for commit:", commit.sha, error)
-        commit.summary = null
+    const summaryResults = await openRouter.batchGenerateSummaries(
+      keyCommits.map(commit => ({
+        sha: commit.sha,
+        message: commit.message,
+        filesChanged: commit.filesChanged,
+        additions: commit.additions,
+        deletions: commit.deletions
+      }))
+    )
+    
+    // Map summaries back to commits
+    const summaryMap = new Map(
+      summaryResults.map(result => [result.sha, result.summary])
+    )
+    
+    commits.forEach(commit => {
+      if (summaryMap.has(commit.sha)) {
+        commit.summary = summaryMap.get(commit.sha)
       }
-    }
+    })
     
     return commits
   } catch (error) {
-    console.error("Error initializing ZAI for summaries:", error)
+    console.error("Error generating summaries:", error)
     return commits
   }
 }
