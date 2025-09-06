@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from 'react'
 import { FREE_AI_MODELS, PREMIUM_AI_MODELS, AIModel, DEFAULT_MODEL_CONFIG } from '@/lib/ai-models'
 import { OpenRouterAI } from '@/lib/openrouter'
