@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  githubId      String   @unique
+  email         String?
+  name          String?
+  avatar        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  repositories  Repository[]
+  analyses      Analysis[]
+  
+  @@map("users")
+}
+
+model Repository {
+  id              String   @id @default(cuid())
+  githubId        String   @unique
+  name            String
+  fullName        String
+  description     String?
+  language        String?
+  stars           Int      @default(0)
+  forks           Int      @default(0)
+  isPrivate       Boolean  @default(false)
+  lastAnalyzedAt  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses        Analysis[]
+  commits         Commit[]
+  contributors    Contributor[]
+  
+  @@map("repositories")
+}
+
+model Analysis {
+  id              String   @id @default(cuid())
+  status          AnalysisStatus @default(PENDING)
+  progress        Int      @default(0)
+  error           String?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repositoryId    String
+  repository      Repository   @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  commits         Commit[]
+  contributors    Contributor[]
+  
+  @@map("analyses")
+}
+
+model Commit {
+  id              String   @id @default(cuid())
+  sha             String   @unique
+  message         String
+  authorName      String
+  authorEmail     String
+  authorDate      DateTime
+  committerName   String
+  committerEmail  String
+  committerDate   DateTime
+  additions       Int      @default(0)
+  deletions       Int      @default(0)
+  filesChanged    Int      @default(0)
+  significance    Float    @default(0) // AI-calculated significance score
+  summary         String?  // AI-generated summary
+  isKeyCommit     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  
+  // Relations
+  repositoryId    String
+  repository      Repository   @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  analysisId      String?
+  analysis        Analysis?    @relation(fields: [analysisId], references: [id])
+  
+  @@map("commits")
+}
+
+model Contributor {
+  id              String   @id @default(cuid())
+  githubId        String
+  login           String
+  name            String?
+  email           String?
+  avatar          String?
+  commitsCount    Int      @default(0)
+  additions       Int      @default(0)
+  deletions       Int      @default(0)
+  isFirstContributor Boolean @default(false)
+  isTopContributor Boolean @default(false)
+  createdAt       DateTime @default(now())
+  
+  // Relations
+  repositoryId    String
+  repository      Repository   @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  analysisId      String?
+  analysis        Analysis?    @relation(fields: [analysisId], references: [id])
+  
+  @@unique([repositoryId, githubId])
+  @@map("contributors")
+}
+
+enum AnalysisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
