@@ -1,8 +1,8 @@
 
 export const siteConfig = {
   name: "GitLegend",
-  url: "https://gitlegend.com",
-  ogImage: "https://gitlegend.com/og.jpg",
+  url: "https://www.gitlegend.com",
+  ogImage: "https://www.gitlegend.com/og.jpg",
   description:
     "Understand Your Past. Build Your Future.",
   links: {
