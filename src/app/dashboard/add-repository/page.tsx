@@ -1,5 +1,7 @@
 "use client"
-
+// will used by developers to add a repository from their github - allowing the user to update their 
+// access rights to the github repo may proove useful
+// src/app/dashboard/add-repository/page.tsx
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"

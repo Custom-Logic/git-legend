@@ -1,3 +1,6 @@
+
+// documentations page
+
 export default function DocPage({ params }: { params: { slug: string[] } }) {
   return (
     <div>

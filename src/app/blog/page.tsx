@@ -3,7 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
+// blog route
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
 function getSortedPostsData() {

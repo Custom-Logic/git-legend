@@ -1,6 +1,6 @@
 
 import React from 'react';
-
+// explain how the developer section of this web application works, refer to the docs and pricing page for more information
 export default function DeveloperPage() {
   return (
     <div className="container mx-auto px-4 py-8">

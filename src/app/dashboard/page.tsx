@@ -1,5 +1,8 @@
 "use client"
-// Updated the use client
+// Updated the use client - please link all the functionality needed by client to the dashboard hint MCP Functionality - 
+// using tabbed navigation on the left handside may be helpful - on mobile find a way to collapse the navigation
+// src/app/dashboard/page.tsx
+
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -285,7 +288,8 @@ export default function Dashboard() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredRepositories.map((repo) => {
               const repoStats = stats?.repositoryStats?.find(s => s.id === repo.id) // A
-            
+              const isAnalyzed = repoStats?.isAnalyzed || repo.lastAnalyzedAt
+
             return (
               <Card key={repo.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -328,12 +332,14 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {repo.lastAnalyzedAt ? (
+                  {isAnalyzed ? (
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2 text-sm text-green-600">
                         <Calendar className="w-4 h-4" />
                         <span>
-                          Analyzed {new Date(repo.lastAnalyzedAt).toLocaleDateString()}
+                          Analyzed {repo.lastAnalyzedAt ? 
+                            new Date(repo.lastAnalyzedAt).toLocaleDateString() : 
+                            "Recently"}
                         </span>
                       </div>
                       <Link href={`/legend/${repo.id}`}>
@@ -343,6 +349,7 @@ export default function Dashboard() {
                       </Link>
                     </div>
                   ) : (
+           
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2 text-sm text-orange-600">
                         <Calendar className="w-4 h-4" />
@@ -353,14 +360,7 @@ export default function Dashboard() {
                         onClick={() => analyzeRepository(repo.id)}
                         disabled={analyzingRepo === repo.id}
                       >
-                        {analyzingRepo === repo.id ? (
-                          "Analyzing..."
-                        ) : (
-                          <>
-                            <Play className="w-4 h-4 mr-2" />
-                            Analyze Now
-                          </>
-                        )}
+                        {analyzingRepo === repo.id ? ("Analyzing...") : (<><Play className="w-4 h-4 mr-2" />Analyze Now</>)}
                       </Button>
                     </div>
                   )}

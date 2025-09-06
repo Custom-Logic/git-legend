@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+// used to display repo public legend should be shareable on the internet
+// public\legend\[id]\badge\route.ts
 
 export async function GET(
   request: Request,

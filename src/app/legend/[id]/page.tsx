@@ -1,5 +1,6 @@
 "use client"
-
+// displays legend to owner of repo
+// src/app/legend/[id]/page.tsx
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -180,6 +181,7 @@ export default function LegendPage() {
     }
   }
 
+  
   const generateShareUrl = () => {
     return `${window.location.origin}/legend/${repositoryId}`
   }
