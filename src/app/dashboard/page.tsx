@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Github, Plus, Search, Calendar, Users, Code, TrendingUp, Play } from "lucide-react"
+import { Github, Plus, Search, Calendar, Users, Code, TrendingUp, Play, ArrowUp, ArrowDown } from "lucide-react"
 import Link from "next/link"
 
 interface Repository {
@@ -22,10 +22,32 @@ interface Repository {
   lastAnalyzedAt?: string
 }
 
+interface DashboardStats {
+  totalRepositories: number
+  totalStars: number
+  analyzedThisWeek: number
+  weeklyChangePercent: number
+  activeContributors: number
+  recentAnalyses: Array<{
+    id: string
+    repositoryName: string
+    completedAt: string
+    summariesGenerated: number
+  }>
+  repositoryStats: Array<{
+    id: string
+    name: string
+    lastAnalyzedAt: string | null
+    totalAnalyses: number
+    isAnalyzed: boolean
+  }>
+}
+
 export default function Dashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [repositories, setRepositories] = useState<Repository[]>([])
+  const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [analyzingRepo, setAnalyzingRepo] = useState<string | null>(null)
@@ -38,19 +60,29 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (session) {
-      fetchRepositories()
+      fetchData()
     }
   }, [session])
 
-  const fetchRepositories = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch("/api/repositories")
-      if (response.ok) {
-        const data = await response.json()
-        setRepositories(data)
+      // Fetch repositories and stats in parallel
+      const [reposResponse, statsResponse] = await Promise.all([
+        fetch("/api/repositories"),
+        fetch("/api/dashboard/stats")
+      ])
+
+      if (reposResponse.ok) {
+        const reposData = await reposResponse.json()
+        setRepositories(reposData)
+      }
+
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json()
+        setStats(statsData)
       }
     } catch (error) {
-      console.error("Error fetching repositories:", error)
+      console.error("Error fetching data:", error)
     } finally {
       setLoading(false)
     }
@@ -59,17 +91,15 @@ export default function Dashboard() {
   const analyzeRepository = async (repoId: string) => {
     setAnalyzingRepo(repoId)
     try {
-      const response = await fetch("/api/analyze", {
+      const response = await fetch("/api/analysis", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repositoryId: repoId }),
       })
 
       if (response.ok) {
-        // Refresh repositories to show updated status
-        await fetchRepositories()
+        // Refresh data to show updated status
+        await fetchData()
       } else {
         const error = await response.json()
         console.error("Analysis failed:", error)
@@ -94,9 +124,7 @@ export default function Dashboard() {
     )
   }
 
-  if (!session) {
-    return null
-  }
+  if (!session) return null
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -140,7 +168,7 @@ export default function Dashboard() {
               <Code className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{repositories.length}</div>
+              <div className="text-2xl font-bold">{stats?.totalRepositories || 0}</div>
               <p className="text-xs text-muted-foreground">
                 Connected to GitLegend
               </p>
@@ -153,9 +181,21 @@ export default function Dashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">
-                +20% from last week
+              <div className="text-2xl font-bold">{stats?.analyzedThisWeek || 0}</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                {stats?.weeklyChangePercent !== undefined && (
+                  <>
+                    {stats.weeklyChangePercent >= 0 ? (
+                      <ArrowUp className="h-3 w-3 text-green-500" />
+                    ) : (
+                      <ArrowDown className="h-3 w-3 text-red-500" />
+                    )}
+                    <span className={stats.weeklyChangePercent >= 0 ? "text-green-600" : "text-red-600"}>
+                      {Math.abs(stats.weeklyChangePercent)}%
+                    </span>
+                    from last week
+                  </>
+                )}
               </p>
             </CardContent>
           </Card>
@@ -166,9 +206,7 @@ export default function Dashboard() {
               <Github className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {repositories.reduce((acc, repo) => acc + repo.stars, 0)}
-              </div>
+              <div className="text-2xl font-bold">{stats?.totalStars?.toLocaleString() || 0}</div>
               <p className="text-xs text-muted-foreground">
                 Across all repositories
               </p>
@@ -181,13 +219,43 @@ export default function Dashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">47</div>
+              <div className="text-2xl font-bold">{stats?.activeContributors || 0}</div>
               <p className="text-xs text-muted-foreground">
                 Last 30 days
               </p>
             </CardContent>
           </Card>
         </div>
+
+        {/* Recent Activity */}
+        {stats?.recentAnalyses && stats.recentAnalyses.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="text-lg">Recent Analysis Activity</CardTitle>
+              <CardDescription>Latest repository analyses completed</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {stats.recentAnalyses.slice(0, 3).map((analysis) => (
+                  <div key={analysis.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div>
+                        <p className="font-medium">{analysis.repositoryName}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {analysis.summariesGenerated} summaries generated
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(analysis.completedAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Action Bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -213,78 +281,91 @@ export default function Dashboard() {
 
         {/* Repository Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRepositories.map((repo) => (
-            <Card key={repo.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg">{repo.name}</CardTitle>
-                    <CardDescription className="text-sm">
-                      {repo.fullName}
-                    </CardDescription>
-                  </div>
-                  {repo.language && (
-                    <Badge variant="outline">{repo.language}</Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {repo.description && (
-                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2">
-                    {repo.description}
-                  </p>
-                )}
-                
-                <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <Github className="w-4 h-4" />
-                      <span>{repo.stars}</span>
+          {filteredRepositories.map((repo) => {
+            const repoStats = stats?.repositoryStats.find(s => s.id === repo.id)
+            
+            return (
+              <Card key={repo.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-lg">{repo.name}</CardTitle>
+                      <CardDescription className="text-sm">
+                        {repo.fullName}
+                      </CardDescription>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <Code className="w-4 h-4" />
-                      <span>{repo.forks}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {repo.lastAnalyzedAt ? (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-sm text-green-600">
-                      <Calendar className="w-4 h-4" />
-                      <span>Analyzed</span>
-                    </div>
-                    <Link href={`/legend/${repo.id}`}>
-                      <Button variant="outline" size="sm">
-                        View Legend
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-sm text-orange-600">
-                      <Calendar className="w-4 h-4" />
-                      <span>Not analyzed</span>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      onClick={() => analyzeRepository(repo.id)}
-                      disabled={analyzingRepo === repo.id}
-                    >
-                      {analyzingRepo === repo.id ? (
-                        "Analyzing..."
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4 mr-2" />
-                          Analyze Now
-                        </>
+                    <div className="flex flex-col items-end gap-1">
+                      {repo.language && (
+                        <Badge variant="outline">{repo.language}</Badge>
                       )}
-                    </Button>
+                      {repoStats && repoStats.totalAnalyses > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          {repoStats.totalAnalyses} analyses
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                </CardHeader>
+                <CardContent>
+                  {repo.description && (
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2">
+                      {repo.description}
+                    </p>
+                  )}
+                  
+                  <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <Github className="w-4 h-4" />
+                        <span>{repo.stars.toLocaleString()}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Code className="w-4 h-4" />
+                        <span>{repo.forks.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {repo.lastAnalyzedAt ? (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2 text-sm text-green-600">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          Analyzed {new Date(repo.lastAnalyzedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <Link href={`/legend/${repo.id}`}>
+                        <Button variant="outline" size="sm">
+                          View Legend
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2 text-sm text-orange-600">
+                        <Calendar className="w-4 h-4" />
+                        <span>Not analyzed</span>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        onClick={() => analyzeRepository(repo.id)}
+                        disabled={analyzingRepo === repo.id}
+                      >
+                        {analyzingRepo === repo.id ? (
+                          "Analyzing..."
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 mr-2" />
+                            Analyze Now
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
 
         {filteredRepositories.length === 0 && (
@@ -305,6 +386,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </div>
+    </div> // <-- This closing div was missing
   )
 }
