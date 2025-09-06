@@ -56,13 +56,14 @@ model VerificationToken {
 // -----------------------------
 
 model User {
-  id            String   @id @default(cuid())
-  githubId      String?  @unique  // Changed to optional
-  email         String   @unique  // Changed to required + unique
+  id            String    @id @default(cuid())
+  githubId      String?   @unique
+  email         String    @unique
+  emailVerified DateTime?
   name          String?
   avatar        String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // NextAuth relations
   accounts      Account[]
@@ -150,7 +151,7 @@ model Contributor {
   githubId           String
   login              String
   name               String?
-  email              String? 
+  email              String?
   avatar             String?
   commitsCount       Int      @default(0)
   additions          Int      @default(0)

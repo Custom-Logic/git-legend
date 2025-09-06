@@ -3,56 +3,120 @@ import type { Adapter, AdapterUser } from "next-auth/adapters";
 import type { PrismaClient } from "@prisma/client";
 
 /**
- * Custom Prisma Adapter to map NextAuth's `image` field to our schema's `avatar` field.
- * Extends the default PrismaAdapter, overriding user creation and update logic.
+ * Custom Prisma Adapter to handle NextAuth.js compatibility with our schema
+ * - Maps NextAuth's `image` field to our `avatar` field
+ * - Handles `emailVerified` field properly
+ * - Synchronous version for older NextAuth.js versions
  */
 export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
-  const base = PrismaAdapter(prisma);
+  const baseAdapter = PrismaAdapter(prisma);
 
   return {
-    ...base,
-    async createUser(user) {
-      // Map `image` to `avatar` for our schema
-      const { image, ...rest } = user;
-      const data = { ...rest, avatar: image ?? null };
+    ...baseAdapter,
+
+    createUser(userData: Omit<AdapterUser, "id">) {
       try {
-        // @ts-ignore - base.createUser may expect AdapterUser, but we map fields here
-        return await base.createUser(data);
+        const { image, ...rest } = userData;
+        
+        return prisma.user.create({
+          data: {
+            ...rest,
+            avatar: image ?? null,
+            githubId: userData.email, // Using email as fallback for githubId
+          },
+        });
       } catch (error) {
-        // Add error handling/logging as needed
+        console.error("Error creating user:", error);
         throw error;
       }
     },
-    async updateUser(user) {
-      // Map `image` to `avatar` for our schema
-      const { image, ...rest } = user;
-      const data = { ...rest, avatar: image ?? null };
+
+    updateUser(userData: Partial<AdapterUser> & Pick<AdapterUser, "id">) {
       try {
-        // @ts-ignore - base.updateUser may expect AdapterUser, but we map fields here
-        return await base.updateUser(data);
+        const { image, id, ...rest } = userData;
+        
+        return prisma.user.update({
+          where: { id },
+          data: {
+            ...rest,
+            avatar: image ?? undefined,
+          },
+        });
       } catch (error) {
+        console.error("Error updating user:", error);
         throw error;
       }
     },
-    // Optionally, override getUser if you want to map `avatar` back to `image` for NextAuth
-    async getUser(id) {
-      if (!base.getUser) return null;
-      const user = await base.getUser(id);
-      if (!user) return null;
-      // Map `avatar` back to `image` for NextAuth compatibility
-      return { ...user, image: (user as any).avatar ?? null } as AdapterUser;
+
+    getUser(id) {
+      try {
+        return prisma.user.findUnique({
+          where: { id },
+        }).then(user => {
+          if (!user) return null;
+          
+          // Map our avatar field back to NextAuth's expected image field
+          return {
+            ...user,
+            image: user.avatar ?? null,
+          } as AdapterUser;
+        });
+      } catch (error) {
+        console.error("Error getting user:", error);
+        return Promise.resolve(null);
+      }
     },
-    async getUserByEmail(email) {
-      if (!base.getUserByEmail) return null;
-      const user = await base.getUserByEmail(email);
-      if (!user) return null;
-      return { ...user, image: (user as any).avatar ?? null } as AdapterUser;
+
+    getUserByEmail(email) {
+      try {
+        return prisma.user.findUnique({
+          where: { email },
+        }).then(user => {
+          if (!user) return null;
+          
+          return {
+            ...user,
+            image: user.avatar ?? null,
+          } as AdapterUser;
+        });
+      } catch (error) {
+        console.error("Error getting user by email:", error);
+        return Promise.resolve(null);
+      }
     },
-    async getUserByAccount(account) {
-      if (!base.getUserByAccount) return null;
-      const user = await base.getUserByAccount(account);
-      if (!user) return null;
-      return { ...user, image: (user as any).avatar ?? null } as AdapterUser;
+
+    getUserByAccount(providerAccountId: { provider: string; providerAccountId: string; }) {
+      try {
+        return prisma.account.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: providerAccountId.provider,
+              providerAccountId: providerAccountId.providerAccountId,
+            },
+          },
+          include: { user: true },
+        }).then(account => {
+          if (!account?.user) return null;
+          
+          return {
+            ...account.user,
+            image: account.user.avatar ?? null,
+            emailVerified: account.user.emailVerified ?? null,
+          } as AdapterUser;
+        });
+      } catch (error) {
+        console.error("Error getting user by account:", error);
+        return Promise.resolve(null);
+      }
     },
+
+    // Keep all other methods from the base adapter
+    linkAccount: baseAdapter.linkAccount?.bind(baseAdapter),
+    createSession: baseAdapter.createSession?.bind(baseAdapter),
+    getSessionAndUser: baseAdapter.getSessionAndUser?.bind(baseAdapter),
+    updateSession: baseAdapter.updateSession?.bind(baseAdapter),
+    deleteSession: baseAdapter.deleteSession?.bind(baseAdapter),
+    createVerificationToken: baseAdapter.createVerificationToken?.bind(baseAdapter),
+    useVerificationToken: baseAdapter.useVerificationToken?.bind(baseAdapter),
   };
 }
