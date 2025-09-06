@@ -99,7 +99,9 @@ export default function Dashboard() {
 
       if (response.ok) {
         // Refresh data to show updated status
+        
         await fetchData()
+        console.log("Repo Analyzed")
       } else {
         const error = await response.json()
         console.error("Analysis failed:", error)
