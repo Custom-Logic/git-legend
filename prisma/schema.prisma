@@ -47,6 +47,7 @@ model VerificationToken {
   token      String   @unique
   expires    DateTime
 
+  @@unique([identifier, token])
   @@map("verification_tokens")
 }
 
@@ -56,8 +57,8 @@ model VerificationToken {
 
 model User {
   id            String   @id @default(cuid())
-  githubId      String   @unique
-  email         String?
+  githubId      String?  @unique  // Changed to optional
+  email         String   @unique  // Changed to required + unique
   name          String?
   avatar        String?
   createdAt     DateTime @default(now())
@@ -149,7 +150,7 @@ model Contributor {
   githubId           String
   login              String
   name               String?
-  email              String?
+  email              String? 
   avatar             String?
   commitsCount       Int      @default(0)
   additions          Int      @default(0)
