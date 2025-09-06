@@ -291,7 +291,7 @@ export default function Dashboard() {
 
         {/* Repository Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRepositories.map((repo) => {
+          {filteredRepositories?.map((repo) => {
             const repoStats = stats?.repositoryStats?.find((s) => s.id === repo.id);
             const isAnalyzed = repoStats?.isAnalyzed || repo.lastAnalyzedAt;
             const isProcessing = repoStats?.analysisStatus === 'PROCESSING';
