@@ -91,7 +91,7 @@ export default function Dashboard() {
   const analyzeRepository = async (repoId: string) => {
     setAnalyzingRepo(repoId)
     try {
-      const response = await fetch("/api/analysis", {
+      const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repositoryId: repoId }),
