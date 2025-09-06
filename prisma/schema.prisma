@@ -64,14 +64,16 @@ model User {
   avatar        String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  isAdmin       Boolean   @default(false)
 
   // NextAuth relations
-  accounts      Account[]
-  sessions      Session[]
-
+  accounts       Account[]
+  sessions       Session[]
+  aiModelConfigs AiModelConfig[]
+  
   // App-specific relations
-  repositories  Repository[]
-  analyses      Analysis[]
+  repositories   Repository[]
+  analyses       Analysis[]
 
   @@map("users")
 }
@@ -101,13 +103,15 @@ model Repository {
 }
 
 model Analysis {
-  id              String   @id @default(cuid())
-  status          AnalysisStatus @default(PENDING)
-  progress        Int      @default(0)
-  error           String?
-  completedAt     DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  status             AnalysisStatus @default(PENDING)
+  progress           Int      @default(0)
+  error              String?
+  completedAt        DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  modelUsageStats    Json?    // Track which models were used
+  summariesGenerated Int?     // Number of successful summaries
 
   // Relations
   userId          String
@@ -167,6 +171,20 @@ model Contributor {
 
   @@unique([repositoryId, githubId])
   @@map("contributors")
+}
+
+model AiModelConfig {
+  id            String   @id @default(cuid())
+  primaryModel  String   // e.g., "deepseek/deepseek-r1:free"
+  fallbackModel String   // e.g., "deepseek/deepseek-chat:free" 
+  enabledModels Json     // Changed from String[] to Json for PostgreSQL compatibility
+  updatedBy     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user User @relation(fields: [updatedBy], references: [id], onDelete: Cascade)
+  
+  @@map("ai_model_configs")
 }
 
 enum AnalysisStatus {

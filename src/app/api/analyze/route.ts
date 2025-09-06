@@ -3,43 +3,19 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { OpenRouterAI } from "@/lib/openrouter"
+import { DEFAULT_MODEL_CONFIG } from "@/lib/ai-models"
 
 interface GitHubCommit {
   sha: string
   commit: {
     message: string
-    author: {
-      name: string
-      email: string
-      date: string
-    }
-    committer: {
-      name: string
-      email: string
-      date: string
-    }
+    author: { name: string; email: string; date: string }
+    committer: { name: string; email: string; date: string }
   }
-  author: {
-    login: string
-    avatar_url: string
-    id: number
-  }
-  committer: {
-    login: string
-    avatar_url: string
-    id: number
-  }
-  stats?: {
-    additions: number
-    deletions: number
-    total: number
-  }
-  files?: Array<{
-    filename: string
-    additions: number
-    deletions: number
-    changes: number
-  }>
+  author: { login: string; avatar_url: string; id: number }
+  committer: { login: string; avatar_url: string; id: number }
+  stats?: { additions: number; deletions: number; total: number }
+  files?: Array<{ filename: string; additions: number; deletions: number; changes: number }>
 }
 
 export async function POST(request: Request) {
@@ -53,37 +29,24 @@ export async function POST(request: Request) {
     const { repositoryId } = await request.json()
 
     if (!repositoryId) {
-      return NextResponse.json(
-        { error: "Repository ID is required" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Repository ID is required" }, { status: 400 })
     }
 
     const repository = await db.repository.findFirst({
       where: {
         id: repositoryId,
-        user: {
-          email: session.user.email ?? undefined
-        }
+        user: { email: session.user.email ?? undefined }
       },
-      include: {
-        user: true
-      }
+      include: { user: true }
     })
 
     if (!repository) {
-      return NextResponse.json(
-        { error: "Repository not found" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "Repository not found" }, { status: 404 })
     }
 
     const accessToken = (session as any).accessToken
     if (!accessToken) {
-      return NextResponse.json(
-        { error: "GitHub access token not found" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "GitHub access token not found" }, { status: 401 })
     }
 
     const analysis = await db.analysis.create({
@@ -96,17 +59,29 @@ export async function POST(request: Request) {
     })
 
     performAnalysis(repositoryId, analysis.id, repository.fullName, accessToken)
-      .catch(error => {
-        console.error("Background analysis failed:", error)
-      })
+      .catch(error => console.error("Background analysis failed:", error))
 
     return NextResponse.json({ analysisId: analysis.id })
   } catch (error) {
     console.error("Error starting analysis:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
+async function getAIModelConfig() {
+  try {
+    const config = await db.aiModelConfig.findFirst({
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return config ? {
+      primary: config.primaryModel,
+      fallback: config.fallbackModel,
+      enabled: config.enabledModels
+    } : DEFAULT_MODEL_CONFIG
+  } catch (error) {
+    console.error("Error loading AI model config:", error)
+    return DEFAULT_MODEL_CONFIG
   }
 }
 
@@ -114,32 +89,31 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
   try {
     await db.analysis.update({
       where: { id: analysisId },
-      data: { progress: 10 },
+      data: { progress: 10 }
     })
 
     const commits = await fetchCommits(fullName, accessToken)
     
     await db.analysis.update({
       where: { id: analysisId },
-      data: { progress: 30 },
+      data: { progress: 30 }
     })
 
     const processedCommits = await processCommits(commits)
     
     await db.analysis.update({
       where: { id: analysisId },
-      data: { progress: 60 },
+      data: { progress: 60 }
     })
 
-    const commitsWithSummaries = await generateSummaries(processedCommits)
+    const commitsWithSummaries = await generateSummaries(processedCommits, analysisId)
     
     await db.analysis.update({
       where: { id: analysisId },
-      data: { progress: 80 },
+      data: { progress: 80 }
     })
 
     const contributors = extractContributors(processedCommits)
-
     await saveAnalysisResults(repositoryId, analysisId, commitsWithSummaries, contributors)
 
     await db.analysis.update({
@@ -153,7 +127,7 @@ async function performAnalysis(repositoryId: string, analysisId: string, fullNam
 
     await db.repository.update({
       where: { id: repositoryId },
-      data: { lastAnalyzedAt: new Date() },
+      data: { lastAnalyzedAt: new Date() }
     })
 
   } catch (error) {
@@ -193,7 +167,6 @@ async function fetchCommits(fullName: string, accessToken: string): Promise<GitH
     }
 
     const commits = await response.json()
-    
     if (!commits || commits.length === 0) break
     
     for (const commit of commits) {
@@ -238,7 +211,6 @@ async function processCommits(commits: GitHubCommit[]) {
     significance += Math.log(filesChanged + 1) * 0.3
     significance += hasMergeKeyword ? 0.2 : 0
     significance += hasReleaseKeyword ? 0.3 : 0
-    
     significance = Math.min(significance, 1)
 
     return {
@@ -262,10 +234,17 @@ async function processCommits(commits: GitHubCommit[]) {
   })
 }
 
-async function generateSummaries(commits: any[]) {
+async function generateSummaries(commits: any[], analysisId: string) {
   try {
-    const openRouter = new OpenRouterAI()
+    const modelConfig = await getAIModelConfig()
+    const openRouter = new OpenRouterAI(undefined, modelConfig)
     const keyCommits = commits.filter(commit => commit.isKeyCommit)
+    
+    console.log(`Generating summaries for ${keyCommits.length} key commits using config:`, {
+      primary: modelConfig.primary,
+      fallback: modelConfig.fallback,
+      enabledCount: modelConfig.enabled.length
+    })
     
     const summaryResults = await openRouter.batchGenerateSummaries(
       keyCommits.map(commit => ({
@@ -277,10 +256,41 @@ async function generateSummaries(commits: any[]) {
       }))
     )
     
-    // Map summaries back to commits
-    const summaryMap = new Map(
-      summaryResults.map(result => [result.sha, result.summary])
-    )
+    // Track model usage statistics
+    const modelUsageStats = new Map<string, number>()
+    let successfulSummaries = 0
+    
+    const summaryMap = new Map<string, string>()
+    summaryResults.forEach(result => {
+      if (result.summary) {
+        summaryMap.set(result.sha, result.summary)
+        successfulSummaries++
+        
+        if (result.modelUsed) {
+          modelUsageStats.set(
+            result.modelUsed, 
+            (modelUsageStats.get(result.modelUsed) || 0) + 1
+          )
+        }
+      }
+    })
+    
+    // Log usage statistics
+    console.log(`Summary generation complete:`, {
+      totalCommits: keyCommits.length,
+      successful: successfulSummaries,
+      failureRate: `${((keyCommits.length - successfulSummaries) / keyCommits.length * 100).toFixed(1)}%`,
+      modelUsage: Object.fromEntries(modelUsageStats)
+    })
+    
+    // Save model usage stats to analysis
+    await db.analysis.update({
+      where: { id: analysisId },
+      data: {
+        modelUsageStats: Object.fromEntries(modelUsageStats),
+        summariesGenerated: successfulSummaries
+      }
+    })
     
     commits.forEach(commit => {
       if (summaryMap.has(commit.sha)) {
