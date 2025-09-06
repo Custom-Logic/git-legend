@@ -386,6 +386,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </div> // <-- This closing div was missing
+    </div>
   )
 }
