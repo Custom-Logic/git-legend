@@ -99,11 +99,11 @@ export default function RepositoryAnalytics({
     // Code quality metrics
     const totalAdditions = commits.reduce((sum, commit) => sum + commit.additions, 0)
     const totalDeletions = commits.reduce((sum, commit) => sum + commit.deletions, 0)
-    const avgFilesChanged = commits.reduce((sum, commit) => sum + commit.filesChanged, 0) / commits.length || 0
-    const avgSignificance = commits.reduce((sum, commit) => sum + commit.significance, 0) / commits.length || 0
+    const avgFilesChanged = commits.length > 0 ? commits.reduce((sum, commit) => sum + commit.filesChanged, 0) / commits.length : 0
+    const avgSignificance = commits.length > 0 ? commits.reduce((sum, commit) => sum + commit.significance, 0) / commits.length : 0
     
     // Contributor distribution
-    const topContributorsPct = contributors.length > 0 ? contributors.filter(c => c.isTopContributor).length / contributors.length * 100 : 0
+    const topContributorsPct = contributors.length > 0 ? (contributors.filter(c => c.isTopContributor).length / contributors.length) * 100 : 0
     const avgCommitsPerContributor = contributors.length > 0 ? commits.length / contributors.length : 0
     
     // Risk assessment
@@ -111,8 +111,9 @@ export default function RepositoryAnalytics({
       commit.filesChanged > 20 || commit.additions + commit.deletions > 1000
     ).length
     
-    const staleDays = commits.length > 0 
-      ? Math.floor((now.getTime() - new Date(commits[commits.length - 1].authorDate).getTime()) / (1000 * 60 * 60 * 24))
+    const sortedCommits = useMemo(() => [...commits].sort((a, b) => new Date(a.authorDate).getTime() - new Date(b.authorDate).getTime()), [commits]);
+    const staleDays = sortedCommits.length > 0
+      ? Math.floor((now.getTime() - new Date(sortedCommits[sortedCommits.length - 1].authorDate).getTime()) / (1000 * 60 * 60 * 24))
       : 0
     
     return {
@@ -144,7 +145,7 @@ export default function RepositoryAnalytics({
       },
       riskAssessment: {
         highRiskCommits,
-        riskLevel: highRiskCommits > commits.length * 0.1 ? 'high' : highRiskCommits > commits.length * 0.05 ? 'medium' : 'low',
+        riskLevel: commits.length > 0 && highRiskCommits > commits.length * 0.1 ? 'high' : commits.length > 0 && highRiskCommits > commits.length * 0.05 ? 'medium' : 'low',
         staleDays,
         isActive: staleDays < 30
       }

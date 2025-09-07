@@ -19,34 +19,62 @@ To get a local copy up and running, follow these simple steps.
 
 *   Node.js (v18 or later)
 *   npm or yarn
+*   A GitHub account
+*   An OpenRouter API key (for AI features)
 
 ### Installation
 
-1.  Clone the repo
+1.  **Clone the repo**
     ```sh
     git clone https://github.com/your_username_/your_repository.git
     ```
-2.  Install NPM packages
+2.  **Install NPM packages**
     ```sh
     npm install
     ```
-3.  Set up your environment variables. Create a `.env.local` file in the root of your project and add the following variables:
+3.  **Set up your environment variables**
+
+    Create a `.env.local` file in the root of your project and add the following variables:
+
     ```
+    # GitHub OAuth App credentials
     GITHUB_CLIENT_ID=your_github_client_id
     GITHUB_CLIENT_SECRET=your_github_client_secret
+
+    # NextAuth.js secret
+    # You can generate a secret with: openssl rand -base64 32
     NEXTAUTH_SECRET=your_nextauth_secret
     NEXTAUTH_URL=http://localhost:3000
+
+    # Database connection string
     DATABASE_URL=your_database_url
+
+    # OpenRouter API key for AI features
     OPENROUTER_API_KEY=your_openrouter_api_key
     ```
-4.  Run the development server
+
+    *   **GitHub Credentials**: Create a new GitHub OAuth App [here](https://github.com/settings/applications/new). Set the "Authorization callback URL" to `http://localhost:3000/api/auth/callback/github`.
+    *   **Database URL**: This project uses Prisma. You can use any database supported by Prisma (e.g., PostgreSQL, MySQL, SQLite). For local development, you can use a local PostgreSQL database or a free one from a cloud provider.
+    *   **OpenRouter API Key**: Get your free API key from [OpenRouter](https://openrouter.ai/).
+
+4.  **Set up the database**
+    ```sh
+    npx prisma migrate dev
+    ```
+5.  **Run the development server**
     ```sh
     npm run dev
     ```
 
 ## Usage
 
-Once the development server is running, you can access the application at `http://localhost:3000`. You can sign in with your GitHub account to add and analyze your repositories.
+Once the development server is running, you can access the application at `http://localhost:3000`.
+
+1.  **Sign in**: Sign in with your GitHub account.
+2.  **Add a repository**: Go to the dashboard and click "Add Repository". You can add any public repository by URL, or select from your own repositories.
+3.  **Analyze**: Once a repository is added, click "Analyze Now" to start the analysis process. This may take a few minutes depending on the size of the repository.
+4.  **View the Legend**: After the analysis is complete, you can view the repository's "Legend", which includes the commit timeline, contributor insights, health score, and more.
+5.  **Use AI Tools**: The "AI Tools" tab in the legend provides access to AI-powered features like architectural shift analysis and bug diagnosis.
 
 ## Technologies Used
 
@@ -59,6 +87,16 @@ Once the development server is running, you can access the application at `http:
 *   [Socket.IO](https://socket.io/) - Real-time, bidirectional and event-based communication
 *   [Radix UI](https://www.radix-ui.com/) - Unstyled, accessible components for building high-quality design systems
 *   [Vercel](https://vercel.com/) - Platform for frontend frameworks and static sites
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
 ## License
 
